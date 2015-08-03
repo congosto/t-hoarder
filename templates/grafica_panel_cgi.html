@@ -1,0 +1,79 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="pragma" content="no-cache">
+<script type="text/javascript"
+  src="../js/dygraph-combined.js"></script>
+<link rel="stylesheet" href="../css/talk.css" type="text/css" media="screen" />
+</head>
+  <body>
+    <table width=100%>
+      <tr>
+        <td width=50%>
+            <div id="grafica" style="width:450px; height=450"; margin:0px; padding:0px 0px 0px 0px;" ></div>
+        </td>
+        <td  rowspan=3 width=50% aling="top">
+            <div id="tweets" style="width:400px;  padding-top:10px;">
+                <script type="text/javascript">
+                var tweets_frame='<iframe width="450," height="550" frameborder="0" marginwidth="5" name="talks" src="@cgi?experiment=@experimento&source=hoy&select=@select">';
+                document.getElementById("tweets").innerHTML =tweets_frame;
+                </script>
+             </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+           <div id="status" style="width:500px; font-size:0.8em; padding-top:0px;"></div>
+        </td>
+      </tr>
+      <tr>
+         <td style="text-align:center">
+            (Realizado con la herramienta <a href="http://t-hoarder.com"  target="_blank" ">t-hoarder</a>)
+          </td>
+      </tr>
+    </table>
+    <script type="text/javascript">
+      g2 = new Dygraph(
+      document.getElementById("grafica"),
+    "@data_file", // path to CSV file
+    {
+                labelsKMB: true,
+                labelsDiv: document.getElementById('status'),
+                legend: 'always',
+                colors: ["rgb(255,0,0)",
+                         "rgb(0,0,255)",
+                         "rgb(0,255,0)",
+                         "rgb(114,4,109)",
+                         "rgb(27,127,171)",
+                         "rgb(55,145,55)",
+                         "rgb(173,185,15)",
+                         "rgb(136,86,64)",
+                         "rgb(102,100,98)",
+                         "rgb(0,0,0)"],
+                width: 450,
+                height:450,
+                rightGap:0,
+		fillGraph:true,
+                title: '@title',
+                clickCallback: function(e, x, pts) {
+                    var d=new Date(x);
+                    var d_ok=d.addDays(1);
+                    var d_str=d_ok.toISOString();
+                    str=d_str.substring(0,10);
+                    var tweets_frame='<iframe width="450," height=550" frameborder="0" marginwidth="0" name="talks" src="@cgi?experiment=@experimento&source='+str+'&select=@select">';
+                    document.getElementById("tweets").innerHTML =tweets_frame;
+                }
+    }
+    );
+
+            Date.prototype.addDays = function (dias){
+              var fecha1 = new Date(2011, 1,20);
+              fecha2 = new Date(2011, 1,21);
+              var diferencia = fecha2.getTime() - fecha1.getTime();
+              var luego = new Date();
+              luego.setTime( this.getTime() + (dias * diferencia )  );
+             return luego;
+            }
+   </script>
+  </body>
+</html>

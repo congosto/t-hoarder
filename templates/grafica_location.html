@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>t-hoarder: @experimento localizaciones</title>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization"></script>
+    <script>
+      // Adding 500 Data Points
+      var map, pointarray, heatmap, loc_tweets,aux,list_aux,coordinates,latitude,longitude;
+	  var list_coordinates = new Array() 
+        xhr = new XMLHttpRequest();
+        if(xhr){
+          xhr.onreadystatechange = function(){
+          if(xhr.readyState == 4){
+            //if(xhr.status == 200 || xhr.state == 304){
+               loc_tweets = xhr.responseText;
+			   aux=loc_tweets.replace(/\r/g,""); 		
+			   list_aux = aux.split('\n');
+               for (i=0;i<list_aux.length;i++){
+			     coordinates=list_aux[i].split(",");
+				 if (coordinates.length ==2)
+				 {
+				   latitude=parseFloat(coordinates[0]);
+				   longitude=parseFloat(coordinates[1]);
+			       list_coordinates[i] =  new google.maps.LatLng(latitude,longitude);
+				 }
+			   }
+            //}
+          }else{
+            //proveer mensajes para los diferentes codigos http.
+          }
+        }
+        xhr.open('GET','@data_file',false);
+        xhr.send(null);
+        }else{
+          //proveer una alternativa a ajax si no esta disponible.
+        }
+
+
+      function initialize() {
+        var mapOptions = {
+          zoom: 6,
+          center: new google.maps.LatLng(40.42587000,-3.68544000),
+          mapTypeId: google.maps.MapTypeId.HYBRID
+        };
+
+        
+        map = new google.maps.Map(document.getElementById('map_canvas'),
+            mapOptions);
+
+        pointArray = new google.maps.MVCArray(list_coordinates);
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: pointArray
+        });
+
+        heatmap.setMap(map);
+        heatmap.setOptions({radius: 30});
+		
+      }
+
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+
+      function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.setOptions({
+          gradient: heatmap.get('gradient') ? null : gradient
+        });
+      }
+
+      function changeRadius() {
+        heatmap.setOptions({radius: heatmap.get('radius') ? null : 30});
+      }
+
+      function changeOpacity() {
+        heatmap.setOptions({opacity: heatmap.get('opacity') ? null : 0.2});
+      }
+    </script>
+  </head>
+
+  <body onload="initialize()">
+    <div id="map_canvas" style="height: 550px; width: 800px;"></div>
+  </body>
+</html>
+
+

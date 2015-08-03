@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>T-hoarder:  @experiment </title>
+    <meta name="description" content="Herramienta T-hoarder, monitorización y anlisis de tweets">
+    <meta name="author" content="@author">
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="../js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="../js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/panel.css" media="screen" type="text/css"  />
+    <style>
+      body { padding-top: 60px; padding-left: 60px; }
+    </style>
+    <Script language="JavaScript">
+    <!--
+    function FrameGrafica(grafica)  {
+      parent.grafica.location.href=grafica;
+    }  
+  //-->
+  </Script>
+  </head>
+
+  <body>
+    <!-- Barra de navegacion
+    ================================================== -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+         <a class="brand" href="http://t-hoarder.com"><img src="../images/logo_hoard_150px.png" width="30"><img src=../images/hoard_small_bg_black.png></a>  
+          <ul class="nav" id="tab">
+            <li class="active"><a  href="../experimentos.html" >Experimentos</a></li>
+            <li><a  href="../metodologia.html" >Metodología</a></li>
+            <li><a  href="../about.html" >Acerca de T-hoarder</a></li>
+            <li><a  href="../contact.html" >Contacto</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Home
+    ================================================== -->
+   <h1>Experimento: @experiment</h1>
+    <div class="tab-content">
+      <div class="tab-pane active" id="home">
+        <div class="row">
+          <div class="span12 columns">
+              <form>
+              <input class="btn btn-primary" type="button" value="usuarios" name="usuarios"    onclick="FrameGrafica('@experiment_authors_day.html')">
+              <input class="btn btn-primary" type="button" value="tweets"" name="tweets"    onclick="FrameGrafica('@experiment_tweets_day.html')">
+              <input class="btn btn-primary" type="button" value="hashtags" name="hashtags"    onclick="FrameGrafica('@experiment_top_hashtags_day.html')">
+              <input class="btn btn-primary" type="button" value="top menciones" name="top_menciones"    onclick="FrameGrafica('@experiment_top_mention_day.html')">
+              <input class="btn btn-primary" type="button" value="top twitters" name="top_twitters"    onclick="FrameGrafica('@experiment_top_authors_day.html')">
+              <input class="btn btn-primary" type="button" value="localización" name="localizacion"    onclick="FrameGrafica('@experiment_locations.html')">
+              <input class="btn btn-primary" type="button" value="geolocalización" name="localizacion"    onclick="FrameGrafica('@experiment_geolocations_2.html')">
+              <input class="btn btn-primary" type="button" value="dataset" name="dataset"    onclick="FrameGrafica('@experiment_dataset.html')">
+              <input class="btn btn-primary" type="button" value="ayuda" name="ayuda"    onclick="FrameGrafica('../ayuda_v2.html')">
+            </form>
+            <iframe src="@experiment_authors_day.html" name="grafica" width= 1000, height= 630 frameborder=0 marginwidth=0></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h2>Interactividad de las gráficas</h2>
+           Para ver los <strong>tweets</strong> de una fecha, haga click en el día. Pasando el ratón por la gráfica se pueden ver los <strong>valores numéricos de los elementos de las leyendas</strong>. Para hacer <strong>zoom</strong>, pulsar botón izquierdo del ratón y arrastrar.Para <strong>eliminar el zoom</strong>, hacer doble click.
+    <hr>
+     <p> Experimento realizado por @author</p>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="../js/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/dhtmlgoodies_calendar/dhtmlgoodies_calendar.js?random=20120218"></script>
+  </boby>
+</htm>

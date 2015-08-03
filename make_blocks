@@ -1,0 +1,57 @@
+#!/bin/bash
+# shell script for procesing blocks
+
+if [ $# -ne 4 ]
+then
+   echo "usage: make_blocks experiment store web resources"
+      exit 1
+fi
+
+
+experiment=$1
+store=$2
+web=$3
+resources=$4
+
+
+path=${name_file%/*}
+file_in=${name_file##*/}
+base=${file_in%%.*}
+ext=${file_in#*.}
+
+
+echo "... running packages"
+
+for file in $(ls ${store}/*${experiment}*.tar.gz); do
+  file_in=${file##*/}
+  base=${file_in%%.*}
+  status_file=${base}_counter_status.txt
+  echo "file status ${store}/datos_${experiment}/${status_file}/"
+  if [ -e ${store}/datos_${experiment}/${status_file} ]
+  then 
+    echo " Package counters done ${store}/${file_in}  "
+  else
+    echo " running package counters ${store}/ ${file_in}  "
+    tweets_counter.py ${file_in} --filter ./languages/filter.all  --d_in ${store}/ --d_out ${web}/
+  fi 
+  status_file=${base}_talk_status.txt
+  if [ -e ${store}/datos_${experiment}/${status_file} ]
+  then 
+    echo " Package talk done ${store}/${file_in}  "
+  else
+    echo " running package talk ${store}/ ${file_in}  "
+    tweets_talk.py ${file_in}   --d_in ${store}/ --d_out ${web}/
+  fi 
+  status_file=${base}_loc_status.txt
+  if [ -e ${store}/datos_${experiment}/${status_file} ]
+  then 
+    echo " Package location done ${store}/${file_in}  "
+  else
+    echo " running package location ${store}/ ${file_in}  "
+    tweets_location.py ${file_in} ${resources}/recursos_loc.txt --d_in ${store}/ --d_out ${web}/
+  fi 
+done 
+
+
+
+

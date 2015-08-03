@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>t-hoarder: @experimento geolocalizaciones</title>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=visualization"></script>
+    <script>
+      var map, pointarray, heatmap, loc_tweets,aux,list_aux,coordinates,latitude,longitude;
+	  var list_coordinates = new Array() 
+	  var list_tweets = new Array() 
+        xhr = new XMLHttpRequest();
+        if(xhr){
+          xhr.onreadystatechange = function(){
+          if(xhr.readyState == 4){
+            //if(xhr.status == 200 || xhr.state == 304){
+               loc_tweets = xhr.responseText;
+			   aux=loc_tweets.replace(/\r/g,""); 		
+			   list_aux = aux.split('\n');
+               for (i=0;i<list_aux.length;i++){
+			     coordinates=list_aux[i].split(",");
+				 if (coordinates.length ==3)
+				 {
+				   latitude=parseFloat(coordinates[1]);
+				   longitude=parseFloat(coordinates[0]);
+			       list_coordinates[i] =  new google.maps.LatLng(latitude,longitude);
+			       list_tweets[i] =  coordinates[2];
+				 }
+			   }
+            //}
+          }else{
+            //proveer mensajes para los diferentes codigos http.
+          }
+        }
+        xhr.open('GET','@data_file',false);
+        xhr.send(null);
+        }else{
+          //proveer una alternativa a ajax si no esta disponible.
+        }
+
+
+      function initialize() {
+        var mapOptions = {
+          zoom: 4,
+       center: new google.maps.LatLng(40.42587000,-3.68544000),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById('map_canvas'),
+            mapOptions);
+        for (i=0;i<list_aux.length;i++){
+            marker = new google.maps.Marker({
+            map: map,
+            position: list_coordinates[i],
+            title: list_tweets[i],
+          });
+          google.maps.event.addListener(marker, 'over', function(event) {
+             alert( marker.title);
+          });
+        }
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+
+  <body onload="initialize()">
+    <div id="map_canvas" style="height: 550px; width: 800px;"></div>
+  </body>
+</html>
+
+

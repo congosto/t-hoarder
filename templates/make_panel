@@ -1,0 +1,113 @@
+#!/bin/bash
+# shell script for customize home and panels of experiments
+
+if [ $# -ne 4 ]
+then
+   echo "usage: make_panel  experiment  author dir_in dir_out "
+   exit 1
+fi
+experiment=$1
+author=$2
+dir_in=$3
+dir_out=$4
+temp1=/tmp/panel.$$
+temp2=/tmp/panel_gra.$$
+ 
+echo "${experiment} ${author} ${dir_in} ${dir_out} "
+if [ -e ${dir_out}/${experiment} ]
+  then 
+    echo " Dir dest exists "
+  else
+   mkdir ${dir_out}/${experiment} 
+fi
+# creating home
+
+echo "s/@experiment/${experiment}/g" >${temp1}
+echo "s/@author/${author}/g" >>${temp1}
+sed -f ${temp1} ${dir_in}/home.html > ${dir_out}/${experiment}/index.html
+echo "created ${dir_out}/${experiment}/index.html"
+
+
+# creating panels
+
+echo "s/@data_file/${experiment}_tweets_day.txt/" >${temp2}
+echo "s/@title/Volumen de tweets según tipos/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/None/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_tweets_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_tweets_day.html"
+
+echo "s/@data_file/${experiment}_authors_day.txt/" >${temp2}
+echo "s/@title/Participación de usuarios /" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/None/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_authors_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_authors_day.html"
+
+echo "s/@data_file/${experiment}_top_authors_day.txt/" >${temp2}
+echo "s/@title/Usuarios más activos/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/top_authors/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_authors_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_top_authors_day.html"
+
+echo "s/@data_file/${experiment}_top_mention_day.txt/" >${temp2}
+echo "s/@title/Usuarios más mencionados/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/top_mentions/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_mention_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_top_mention_day.html"
+
+echo "s/@data_file/${experiment}_names_day.txt/" >${temp2}
+echo "s/@title/Menciones por nombre/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+echo "s/@select/names/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html  > ${dir_out}/${experiment}/${experiment}_names_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_names_day.html"
+
+echo "s/@data_file/${experiment}_keywords_day.txt/" >${temp2}
+echo "s/@title/Temas clave más mencionados/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/keywords/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.out/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html  > ${dir_out}/${experiment}/${experiment}_keywords_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_keywords_day.html"
+
+echo "s/@data_file/${experiment}_top_hashtags_day.txt/" >${temp2}
+echo "s/@title/Hashtags más frecuentes/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/top_hashtags/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_hashtags_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_top_hashtags_day.html"
+
+echo "s/@data_file/${experiment}_top_words_day.txt/" >${temp2}
+echo "s/@title/Palabras más frecuentes/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/top_words/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_words_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_top_words_day.html"
+
+echo "s/@data_file/${experiment}_top_apps_day.txt/" >${temp2}
+echo "s/@title/Origen de los tweets/" >>${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+echo "s/@select/top_apps/" >>${temp2}
+echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_apps_day.html
+echo "created ${dir_out}/${experiment}/${experiment}_top_apps_day.html"
+
+echo "s/@data_file/${experiment}_locations.txt/" >${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_location.html > ${dir_out}/${experiment}/${experiment}_locations.html
+echo "created ${dir_out}/${experiment}/${experiment}_locations.html"
+
+echo "s/@data_file/${experiment}_geolocation.txt/" >${temp2}
+echo "s/@experiment/${experiment}/" >>${temp2}
+sed -f ${temp2} ${dir_in}/grafica_geolocation.html > ${dir_out}/${experiment}/${experiment}_geolocations.html
+echo "created ${dir_out}/${experiment}/${experiment}_geolocations.html"
