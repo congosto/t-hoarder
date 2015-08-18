@@ -1,0 +1,25 @@
+#!/bin/bash
+# shell script for procesing blocks
+
+if [ $# -ne 4 ]
+then
+   echo "usage: make_experiment experiment store resources web"
+      exit 1
+fi
+
+
+experiment=$1
+store=$2
+resources=$3
+web=$4
+
+echo "... running packages"
+$HOME/t-hoarder/make_blocks ${experiment}  ${store}/  ${resources}/ 
+echo "... running last_tweets"
+$HOME/t-hoarder/make_last_tweets ${experiment}  ${store}/  ${resources}/
+echo "... running joint_results"
+$HOME/t-hoarder/join_results.py ${experiment}  --dir_in ${store}/datos_${experiment} --dir_out ${web}/${experiment}
+
+
+
+
