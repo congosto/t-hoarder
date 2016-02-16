@@ -6,11 +6,12 @@ La plataforma T-hoarder almacena tuits por líneas temáticas y los procesa auto
 
 1.2	ARQUITECTURA T-HOARDER
 T-hoarder tiene una arquitectura sencilla que evita la dependencia de otros paquetes software. Utiliza Unix como sistema operativo y está desarrollado en Python. Para almacenar información usa ficheros Unix en vez de bases de datos por los siguientes motivos:
-•	Poder funcionar en entornos de desarrollo mínimos, como por ejemplo en una Raspberry PI .
+•	Poder funcionar en entornos de desarrollo mínimos, como por ejemplo en una Raspberry PI.
 •	Facilitar el traslado de los datos de un servidor a otro. Cuando las bases de datos son muy grandes, los respaldos/restauraciones son problemáticos.
 •	No tener que definir a priori un modelo de datos desconociendo el tipo de información que se va a procesar.
 •	Permitir mezclar las distintas colecciones de datos fácilmente.
 •	No requerir el acceso a la información de forma aleatoria ya que el procesado de los datos es secuencial.
+
 Su arquitectura se estructura en tres capas desacopladas para evitar que el tiempo de ejecución de una no interfiera sobre las otras. La comunicación entre estas capas es siempre mediante ficheros. La división funcional es la siguiente:
 •	Capa 1: Recolección y almacenamiento de datos
 •	Capa 2: Procesado de datos
