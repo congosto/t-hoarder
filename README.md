@@ -125,12 +125,12 @@ Primer paso:
 
 Para cada tuit:
 
-:Obtener autor y contabilizarlo
-:Obtener menciones a usuarios y contabilizarlas
-:Obtener el origen del tuit y contabilizarlo
-:Obtener la localización declarada del autor y almacenarla
-:Obtener las palabras del tuit que no sean stopwords y almacenarlas
-:Obtener los hashtags del tuit y almacenarlos
+* Obtener autor y contabilizarlo
+* Obtener menciones a usuarios y contabilizarlas
+* Obtener el origen del tuit y contabilizarlo
+* Obtener la localización declarada del autor y almacenarla
+* Obtener las palabras del tuit que no sean stopwords y almacenarlas
+* Obtener los hashtags del tuit y almacenarlos
   
 
 Segundo paso:
@@ -139,13 +139,13 @@ Obtener el top de autores, menciones, orígenes del tuit, localizaciones, palabr
 
 Para cada día:
 
-  *Para cada tuit de ese día:
-  *Contabilizar el top de autores
-  *Contabilizar el top menciones a usuarios
-  *Contabilizar el top de los orígenes del tuit
-  *Contabilizar el top de localizaciones
-  *Contabilizar el top de palabras
-  *Contabilizar el top de hashtags
+  * Para cada tuit de ese día:
+  * Contabilizar el top de autores
+  * Contabilizar el top menciones a usuarios
+  * Contabilizar el top de los orígenes del tuit
+  * Contabilizar el top de localizaciones
+  * Contabilizar el top de palabras
+  * Contabilizar el top de hashtags
   
   
   
@@ -159,15 +159,11 @@ Se considera que un tuit es la retransmisión de otro cuando comienza por “RT 
 
 La difusión de mensajes se calcula por día y para todo el período de captura de tuits. De esta forma se conoce lo más relevante de cada jornada y lo más destacado en global. Los datos que se almacenan de los tuits más difundidos son:
 
-•	Identificador del tuit.
-
-•	Fecha y hora del tuit.
-
-•	Autor del tuit.
-
-•	Texto del tuit.
-
-•	Número de veces que se ha difundido.
+*	Identificador del tuit.
+*	Fecha y hora del tuit.
+*	Autor del tuit.
+*	Texto del tuit.
+*	Número de veces que se ha difundido.
 
 
 Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tuit es comparado con un buffer de tuits previos analizados. Si se detecta que es una retransmisión de algunos de ellos se incrementa el contador de RTs, en caso contrario se almacena en el buffer como nuevo mensaje. Cada hora o cada 15.000 tuits se salvan los 2.000 tuits más difundidos del buffer y el resto se descarta. De esta manera se evita que el número de comparaciones con tuits no difundidos ralenticen el proceso. Se mantiene un búfer global y otro del día.
