@@ -162,15 +162,10 @@ Primer paso:
 Para cada tuit:
 
   Obtener autor y contabilizarlo
-  
   Obtener menciones a usuarios y contabilizarlas
-  
   Obtener el origen del tuit y contabilizarlo
-  
   Obtener la localización declarada del autor y almacenarla
-  
   Obtener las palabras del tuit que no sean stopwords y almacenarlas
-  
   Obtener los hashtags del tuit y almacenarlos
   
 
@@ -181,17 +176,11 @@ Obtener el top de autores, menciones, orígenes del tuit, localizaciones, palabr
 Para cada día:
 
   Para cada tuit de ese día:
-
   Contabilizar el top de autores
-  
   Contabilizar el top menciones a usuarios
-  
   Contabilizar el top de los orígenes del tuit
-  
   Contabilizar el top de localizaciones
-  
   Contabilizar el top de palabras
-  
   Contabilizar el top de hashtags
   
   
