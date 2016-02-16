@@ -1,10 +1,10 @@
-=	PLATAFORMA T-HOARDER =
+<h1>	PLATAFORMA T-HOARDER </h1>
 
 T-hoarder fue concebido como un medio para almacenar tuits sobre ciertos temas candentes en los que se pudieran analizar los distintos tipos de propagación que podían tener los mensajes. Actualmente la plataforma es una fuente de información elaborada, que puede ser consultada por aquellas personas que muestran un interés por los acontecimientos sociales en España. Ha transcendido su uso más allá de la investigación para dar a conocer la evolución de un conjunto de eventos de interés social como movilizaciones ciudadanas, opiniones sobre la crisis económica, escándalos políticos, corrupción, etc.
 
 La plataforma T-hoarder almacena tuits por líneas temáticas y los procesa automáticamente en tres ejes: temporal, espacial y de relevancia. El eje temporal permite ver tanto la evolución en el tiempo de un conjunto de indicadores como la proporción de mensajes retransmitidos, los usuarios más mencionados o más activos, los hashtags más populares, las palabras más frecuentes, etc. El eje espacial ubica los tuits geográficamente y la relevancia muestra los mensajes más difundidos. Esta plataforma está dotada de una interfaz gráfica interactiva que facilita la navegación por estos tres ejes.
 
-==	ARQUITECTURA T-HOARDER ==
+<h2>	ARQUITECTURA T-HOARDER </h2>
 
 T-hoarder tiene una arquitectura sencilla que evita la dependencia de otros paquetes software. Utiliza Unix como sistema operativo y está desarrollado en Python. Para almacenar información usa ficheros Unix en vez de bases de datos por los siguientes motivos:
 *	Poder funcionar en entornos de desarrollo mínimos, como por ejemplo en una Raspberry PI.
@@ -23,7 +23,7 @@ Su arquitectura se estructura en tres capas desacopladas para evitar que el tiem
 
 Los componentes están programados en Python, estando formado el nombre de cada programa por el nombre del componente y la extensión “py”, siendo fácilmente localizables en el repositorio.
 
-===	CAPA 1: RECOGIDA Y ALMACENAMIENTO DE DATOS ===
+<h3>	CAPA 1: RECOGIDA Y ALMACENAMIENTO DE DATOS </h3>
 
 T-hoarder dispone de una aplicación llamada Tweetdekc y un conjunto de usuarios en Twitter. Para poder acceder a las APIs de Twitter mediante OAuth es necesario crear las claves de acceso para la aplicación y para los usuarios. Estas claves se generan en el componente tweet_auth y quedan almacenadas en ficheros para que los componentes puedan autenticarse automáticamente ante las APIs.
 
@@ -32,7 +32,7 @@ T-hoarder utiliza la API Streaming frente a la API REST por los siguientes motiv
 1.	Porque es el método más adecuado para obtener información en tiempo real con la única limitación de los 50 TPS. La alternativa sería el uso del método GET /search/tweets de API REST, pero esto obligaría a hacer consultas periódicas para obtener los mensajes con la consiguiente complicación tanto en determinar la frecuencia de muestreo como evitar el límite de velocidad.
 2.	Porque cuando se inicia un experimento, generalmente, se recogen los mensajes desde ese mismo momento durante un periodo largo de tiempo. En otro tipo de experimentos de duración corta (días) y en los que es necesario remontarse a una fecha anterior, caso de los trending topic (TT) no es necesario el uso de T-hoarder. Es más razonable obtener los tuits con el método GET /search/tweets de la API REST, con los que se podrán recuperar hasta siete días previos y obtener el dataset completo.
 
-1.2.1.1	Captura de datos
+<h4>	Captura de datos </h4>
 
 Dentro de las opciones de búsqueda de la API Streaming, T-hoarder usa preferentemente las palabras clave y los usuarios. La geolocalización es información que carece de contexto temático y representa una muestra muy pequeña de los tuits (1,5% en España).
 
@@ -64,7 +64,7 @@ Algunos datos como localización, nombre y bio pueden contener saltos de línea 
 
 Puede parecer poco eficiente almacenar información redundante como localización, nombre y bio pero se ha llegado a una solución de compromiso para que la información de los tuits esté auto-contenida, evitando la consulta de información exterior. Además, estos datos pueden cambiar con el tiempo, tanto que hasta existe la herramienta bioischanged  para conocer el historial de cambios de un usuario. Por este motivo, asociar esta información al momento en que se publicó el tuit es más riguroso.
 
-1.2.1.2	Almacenamiento de los datos
+<h4>	Almacenamiento de los datos </h4>
 
 Los datos se han organizado en una estructura de directorios predefinida y con una notación de prefijos y sufijos para facilitar la localización de la información almacenada. Desde una raíz inicial, denominada $STORE, se guardan los distintos flujos de datos de cada experimento y las claves de acceso a la API de Twitter.
 
@@ -74,7 +74,7 @@ Debajo de $STORE se crea un directorio para cada experimento, cuyo nombre será 
 
 Las claves de acceso de la aplicación y de los usuarios se archivan en el directorio $STORE/keys.
 
-1.2.2	CAPA 2: PROCESADO DE DATOS
+<h3>	CAPA 2: PROCESADO DE DATOS </h3>
 
 Esta capa se ejecuta de forma independiente a la captura y almacenamiento para evitar pérdida de tuits. Se utiliza un cron para ejecutar periódicamente los algoritmos de esta capa.
 
@@ -97,13 +97,13 @@ Para cada uno de los paquetes se realizan las siguientes operaciones:
 *	Extraer localización
 *	Generar estado del paquete
 
-1.2.2.1	Filtrado de falsos positivos
+<h4>	Filtrado de falsos positivos </h4>
 
 Algunas veces se capturan falsos positivos debido a que los términos de búsqueda contienen palabras ambiguas o las palabras de las expresiones no aparecen en el orden esperado. Por ejemplo, si recogemos tuits que contengan la expresión “metro de Madrid” la API nos proporcionará todos los tuits que contengan las palabras “metro” y “Madrid” independientemente del orden en que aparezcan. El resultado puede incluir tuits relacionados con el fútbol debido a que Metro es un canal de televisión que emite partidos del Real Madrid o del Atlético de Madrid. Los falsos positivos se detectan cuando al procesar los tuits aparecen mensajes que no son del contexto buscado. Esto implica que hay que descartar los mensajes no deseados y reprocesar el paquete. Para el filtrado se utiliza un fichero llamado filter.txt que contiene un conjunto de palabras o expresiones que no corresponden al contexto y que permite desechar los mensajes que las contengan.
 
 El filtrado se realiza mediante el componente tweets_select_filter que permite seleccionar o excluir tuits que contengan algunos términos o expresiones o que hayan sido publicados por ciertos usuarios.
 
-1.2.2.2	Extraer los indicadores
+<h4>	Extraer los indicadores </h4>
 
 Para observar la evolución de los datos almacenados se van calculando una serie de indicadores para cada día que serán expuestos más tarde en el eje temporal. Estos indicadores proporcionan una idea de la participación y modo de publicación de los mensajes:
 
@@ -149,7 +149,7 @@ Para cada día:
   
   
   
-1.2.2.3	Extraer relevancia
+<h4>	Extraer relevancia </h4>
 
 En T-hoarder, la relevancia se mide por la difusión de los mensajes. Los mensajes se difunden porque captan la atención de otros usuarios que a su vez quieren darle visibilidad en su entorno. En Twitter, la propagación de mensajes se realiza mediante el mecanismo de RT. El RT es una convención creada en los inicios de Twitter por los usuarios que querían compartir un tuit con sus seguidores y se realizaba mediante la publicación del mensaje de otro usuario anteponiéndole las siglas RT y el nombre del autor original. A partir del 2009 Twitter incluyó un botón de RT que hacía lo mismo pero automáticamente, lo que facilitó mucho la propagación de mensajes. Generalmente se difunden los tuits con los que se está de acuerdo, por lo que se puede contabilizar como un voto positivo al mensaje (Conover et al., 2011).
 
@@ -168,7 +168,7 @@ La difusión de mensajes se calcula por día y para todo el período de captura 
 
 Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tuit es comparado con un buffer de tuits previos analizados. Si se detecta que es una retransmisión de algunos de ellos se incrementa el contador de RTs, en caso contrario se almacena en el buffer como nuevo mensaje. Cada hora o cada 15.000 tuits se salvan los 2.000 tuits más difundidos del buffer y el resto se descarta. De esta manera se evita que el número de comparaciones con tuits no difundidos ralenticen el proceso. Se mantiene un búfer global y otro del día.
 
- <nowiki>
+<pre><code>
 
  Para cada tuit:
 
@@ -190,9 +190,9 @@ Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tui
   Sí:
     Almacenar el búfer del día
     Vaciar el búfer del día
- </nowiki>    
+</code></pre>  
 
-1.2.2.4	Extraer localización
+<h4>	Extraer localización</h4>
 
 La ubicación de los tuits se puede conocer por dos caminos. El primero es por la localización declarada del perfil del usuario. Este dato puede no estar completado o contener el nombre de una ubicación ficticia por lo que no es posible ubicar todos los mensajes geográficamente. No obstante, es posible localizar un porcentaje elevado de tuits (entre el 60% - 70%). La segunda opción la proporcionan los tuits geolocalizados de los usuarios que tienen activada la geolocalización en Twitter. En este caso el porcentaje es mucho más pequeño (en España el 1,5%).
 
@@ -200,74 +200,48 @@ Para la localización por perfil de usuario se utiliza un fichero con los munici
 
 Para cada día se almacenan por un lado los tuits localizados por perfil del usuario y por otro los tuits geolocalizados. En ambos casos se guardan los mismos datos:
 
-•	Identificador del tuit
-
-•	Fecha y hora del tuit
-
-•	Autor
-
-•	Texto del tuit
-
-•	Coordenadas
+*	Identificador del tuit
+*	Fecha y hora del tuit
+*	Autor
+*	Texto del tuit
+*	Coordenadas
 
 Las localizaciones se obtienen con el componente tweets_location que analiza la localización declarada del autor del tuit y comprueba si coincide con algún municipio, provincia o autonomía de España.
 
+<pre><code>
 Para cada tuit
-
   ¿Localización coincide con municipio?
-
   Sí:
-  
     Agregar las coordenadas del municipio
-    
   No:
-  
     ¿Localización coincide con provincia?
-    
     Sí:
-    
       Agregar las coordenadas de la capital provincia
-      
     No:
-    
       ¿Localización coincide con la autonomía?
-      
       Sí:
-      
         Agregar las coordenadas de la capital de la autonomía
-        
 ¿Está el tuit localizado?
-
 Sí:
-
   Añadir al fichero de localizaciones
-  
 ¿Está el tuit geolocalizado?
-
 Sí:
-
   Añadir al fichero de geolocalizaciones
-  
-1.2.2.5	Generar estado del paquete
+</code></pre>
+
+<h4>	Generar estado del paquete </h4>
 
 Cuando un paquete es procesado total o parcialmente se almacena, en un fichero denominado experimento_x_status.txt, una información de estado: 
 
-•	Fecha inicial: fecha de tuit más antiguo.
+*	Fecha inicial: fecha de tuit más antiguo.
+*	Fecha final: fecha de tuit más reciente.
+*	Estado: estado del proceso del paquete. Puede tomar los valores: semi-procesado, procesado.
+*	Ultimo tuit procesado: identificador del último tuit procesado.
+*	Longitud del paquete en el momento de procesarlo.
+*	Número de tuits.
+*	Tiempo de ejecución: tiempo de ejecución del paquete.
 
-•	Fecha final: fecha de tuit más reciente.
-
-•	Estado: estado del proceso del paquete. Puede tomar los valores: semi-procesado, procesado.
-
-•	Ultimo tuit procesado: identificador del último tuit procesado.
-
-•	Longitud del paquete en el momento de procesarlo.
-
-•	Número de tuits.
-
-•	Tiempo de ejecución: tiempo de ejecución del paquete.
-
-
-1.2.2.6	Integración de resultados
+<h4>	Integración de resultados</h4>
 
 Los resultados están calculados por día, por lo que la integración es algo tan sencillo como la concatenación de resultados. Solo hay que tener en cuenta el efecto “borde” que se produce al dividir las colecciones de datos en paquetes de 100K. La partición puede dejar un día en diferentes paquetes.
 
@@ -275,30 +249,21 @@ En el caso de los tops (palabras, hashtags, usuarios mencionados y usuarios acti
 
 Los resultados se depositan en el directorio de intercambio $WEB para que el servidor web pueda acceder a ellos. El formato es texto plano con separadores y adaptado a las herramientas de visualización. Los datos se integran con el componente join_results.
 
+<pre><code>
 Para cada paquete de datos
-
   Almacenar contadores de entidades
-  
   Almacenar top de entidades (teniendo en cuenta que un día puede estar en dos paquetes diferentes)
-  
   Almacenar RTs globales
-  
   Almacenar RTs por día (teniendo en cuenta que un día puede estar en dos paquetes diferentes)
-  
   Almacenar localizaciones
-  
 Generar resultado final de contadores de entidades
-
 Generar top de entidades reduciendo el top de 1000 a 10
-
 Generar RTs globales
-
 Generar RTs por día
-
 Generar localizaciones
+</code></pre>
 
-
-1.2.3	CAPA 3: VISUALIZACIÓN
+<h3>CAPA 3: VISUALIZACIÓN</h3>
 
 Para conocer la evolución de la información recuperada, T-hoarder dispone de unos paneles web que permiten visualizar los datos procesados. Estos paneles están construidos mediante una estructura que alberga <iframes>.
 
@@ -306,15 +271,13 @@ El <iframe> es un recurso HTML que permite anidar documentos HTML. Es muy utiliz
 
 Estos paneles se apoyan en los siguientes recursos:
 
-•	El framework boostrap  de HTML, estilos CSS y JavaScript que permiten dar una estructura, un estilo y una interactividad a los distintos elementos del panel.
-
-•	La librería dygraphs  para las gráficas temporales, que tiene opciones avanzadas para favorecer la interactividad, permitiendo hacer zoom y llamar a funciones desde un punto de la gráfica para contextualizar la información.
-
-•	Google Maps para la visualización de mapas (en un futuro en Cartodb ).
+*	El framework boostrap  de HTML, estilos CSS y JavaScript que permiten dar una estructura, un estilo y una interactividad a los distintos elementos del panel.
+*	La librería dygraphs  para las gráficas temporales, que tiene opciones avanzadas para favorecer la interactividad, permitiendo hacer zoom y llamar a funciones desde un punto de la gráfica para contextualizar la información.
+*	Google Maps para la visualización de mapas (en un futuro en Cartodb ).
 
 La creación de paneles se realiza con un conjunto de plantillas genéricas que se particularizan para cada caso mediante el comando make_panel.
 
-1.2.3.1	Plantilla de la página principal
+<h4>	Plantilla de la página principal </h4>
 
 La plantilla home.html contiene la estructura del panel Web en la que se particulariza la descripción del experimento y el acceso a las distintas gráficas temporales o mapas. Para ello se sustituye el token “@experiment” por el nombre del experimento. La plantilla principal consta de cuatro partes:
 
@@ -324,22 +287,22 @@ La plantilla home.html contiene la estructura del panel Web en la que se particu
 4.	Gráficas interactivas con la información seleccionada en el menú. Es un iframe en el que se incrusta la página HTML que le corresponde a la opción del menú seleccionada. Existen dos tipos de gráficas, las temporales donde se muestra la evolución de los distintos indicadores y las geográficas que se representan mediante un mapa.
 
 
-1.2.3.2	Plantilla para gráficas temporales
+<h4>	Plantilla para gráficas temporales </h4>
 
-La plantilla grafica_panel_cgi.html contiene la estructura de la gráfica temporal que se particulariza para cada experimento. Para ello se sustituye el token “@experiment” por el nombre del dataset y el token “@data_file” por el nombre del fichero con los datos. Por lo tanto, esta plantilla se adapta a cada una de las gráficas temporales del experimento. 
+La plantilla 'grafica_panel_cgi.html' contiene la estructura de la gráfica temporal que se particulariza para cada experimento. Para ello se sustituye el token “@experiment” por el nombre del dataset y el token “@data_file” por el nombre del fichero con los datos. Por lo tanto, esta plantilla se adapta a cada una de las gráficas temporales del experimento. 
 
 Las gráficas temporales constan de dos partes interrelacionadas:
  
 1.	La evolución de la entidad seleccionada, en la que se muestra gráficamente la variación de los distintos valores en el tiempo. Pasando el ratón por la gráfica se pueden ver los valores numéricos de los elementos de las leyendas. Para hacer zoom, se pulsa botón izquierdo del ratón y se arrastra. Para eliminar el zoom, se hace doble clic.
 2.	Los tuits más relevantes de la entidad. Por defecto se muestran los más difundidos recientemente. Es posible ver los más propagados durante toda la duración del experimento pulsando en el botón “más difundidos”. Para descubrir los tuits más populares en un día concreto tan solo hay que hacer clic en la fecha de la gráfica de la izquierda. En todos los casos, los mensajes están paginados de cuatro en cuatro y se pueden consultar hasta un máximo de cuarenta.
 
-1.2.3.3	Plantilla para localización de tuits
+<h4>	Plantilla para localización de tuits</h4>
 
-La plantilla grafica_location.html contiene un plano de Google Maps en el que se representa la frecuencia de tuits por áreas mediante un mapa de calor, resaltando con un código de color las zonas más densas de tuits (Figura 7). Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. 
+La plantilla grafica_location contiene un plano de Google Maps en el que se representa la frecuencia de tuits por áreas mediante un mapa de calor, resaltando con un código de color las zonas más densas de tuits. Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. 
 
-1.2.3.4	Plantilla para geolocalización de tuits
+<h4>	Plantilla para geolocalización de tuits</h4>
 
-La plantilla grafica_geolocation.html contiene un mapa de Google Maps para situar los tuits geolocalizados mediante un puntero (Figura 8). Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. Pasando el ratón por el puntero se puede leer el mensaje publicado en ese lugar.
+La plantilla grafica_geolocation contiene un mapa de Google Maps para situar los tuits geolocalizados mediante un puntero (Figura 8). Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. Pasando el ratón por el puntero se puede leer el mensaje publicado en ese lugar.
 
 
 
