@@ -42,39 +42,23 @@ La API suministra los tuits solicitados en formato JSON. Los datos se transforma
 
 De toda la información recibida se seleccionan los datos que son de utilidad para analizar el contexto del tuit:
 
-•	id_tweet: identificador del tuit. Es un número creciente que va asignando Twitter secuencialmente a cada mensaje.
-
-•	timestamp: fecha y hora GMT de tuit.
-
-•	@autor: nombre de usuario del autor del tuit.
-
-•	texto: texto del tuit.
-
-•	app: aplicación desde la que se ha publicado el tuit.
-
-•	id_autor: identificador del autor. Es un número creciente que va asignando Twitter a los usuarios conforme se van dando de alta.
-
-•	seguidores: número de seguidores en el momento de la publicación.
-
-•	siguiendo: número de usuarios seguidos en el momento de la publicación.
-
-•	mensajes: número de tuits publicados anteriormente.
-
-•	localización: localización declarada en el perfil de usuario.
-
-•	url: enlace si el tuit contiene una URL, en caso contrario se almacena el valor None.
-
-•	geolocalización: coordenadas si el tuit está geolocalizado, en caso contrario se almacena None.
-
-•	nombre: nombre proporcionado por el usuario.
-
-•	bio: descripción del usuario.
-
-•	url_media: URL si el tuit contiene información multimedia, en caso contrario se almacena el valor None.
-
-•	tipo_media: tipo de información multimedia (foto, video,.), en caso de no existir, su valor es None.
-
-•	lenguaje: idioma del tuit, si se ha podido detectar.
+*	id_tweet: identificador del tuit. Es un número creciente que va asignando Twitter secuencialmente a cada mensaje.
+*	timestamp: fecha y hora GMT de tuit.
+*	@autor: nombre de usuario del autor del tuit.
+*	texto: texto del tuit.
+*	app: aplicación desde la que se ha publicado el tuit.
+*	id_autor: identificador del autor. Es un número creciente que va asignando Twitter a los usuarios conforme se van dando de alta.
+*	seguidores: número de seguidores en el momento de la publicación.
+*	siguiendo: número de usuarios seguidos en el momento de la publicación.
+*	mensajes: número de tuits publicados anteriormente.
+*	localización: localización declarada en el perfil de usuario.
+*	url: enlace si el tuit contiene una URL, en caso contrario se almacena el valor None.
+*	geolocalización: coordenadas si el tuit está geolocalizado, en caso contrario se almacena None.
+*	nombre: nombre proporcionado por el usuario.
+*	bio: descripción del usuario.
+*	url_media: URL si el tuit contiene información multimedia, en caso contrario se almacena el valor None.
+*	tipo_media: tipo de información multimedia (foto, video,.), en caso de no existir, su valor es None.
+*	lenguaje: idioma del tuit, si se ha podido detectar.
 
 Algunos datos como localización, nombre y bio pueden contener saltos de línea o tabulaciones. Para evitar conflictos con los delimitadores se filtran las tabulaciones y los saltos de línea en estos datos.
 
@@ -107,16 +91,11 @@ En el directorio $WEB existirá un directorio para cada experimento en los que s
 
 Para cada uno de los paquetes se realizan las siguientes operaciones:
 
-•	Filtrar los falsos positivos
-
-•	Extraer los indicadores 
-
-•	Extraer relevancia
-
-•	Extraer localización
-
-•	Generar estado del paquete
-
+*	Filtrar los falsos positivos
+*	Extraer los indicadores 
+*	Extraer relevancia
+*	Extraer localización
+*	Generar estado del paquete
 
 1.2.2.1	Filtrado de falsos positivos
 
@@ -128,25 +107,16 @@ El filtrado se realiza mediante el componente tweets_select_filter que permite s
 
 Para observar la evolución de los datos almacenados se van calculando una serie de indicadores para cada día que serán expuestos más tarde en el eje temporal. Estos indicadores proporcionan una idea de la participación y modo de publicación de los mensajes:
 
-•	Número de tuits: cantidad de tuits recogidos.
-
-•	Número de RTs: cantidad de tuits que son difundidos mediante el mecanismo de retransmisión.
-
-•	Número de replies: cantidad de tuits que son respuestas a otro tuit.
-
-•	Número de menciones: cantidad de tuits que contienen menciones.
-
-•	Número de usuarios únicos: cantidad de usuarios diferentes que han tuiteado.
-
-•	Número de usuarios nuevos: cantidad de usuarios que tuitean por primera vez ese día.
-
-•	Top hashtags: para cada uno de los hashtags más mencionados, la cantidad de veces que aparece en los tuits.
-
-•	Top palabras: para cada una de las palabras más frecuentes (no se tienen en cuenta las stop words), la cantidad de veces que aparece en los tuits.
-
-•	Top usuarios mencionados: para cada uno de los usuarios más mencionados, la cantidad de veces que aparece en los tuits.
-
-•	Top usuarios activos: para cada uno de los usuarios más activos, la cantidad de tuits que han publicado.
+*	Número de tuits: cantidad de tuits recogidos.
+*	Número de RTs: cantidad de tuits que son difundidos mediante el mecanismo de retransmisión.
+*	Número de replies: cantidad de tuits que son respuestas a otro tuit.
+*	Número de menciones: cantidad de tuits que contienen menciones.
+*	Número de usuarios únicos: cantidad de usuarios diferentes que han tuiteado.
+*	Número de usuarios nuevos: cantidad de usuarios que tuitean por primera vez ese día.
+*	Top hashtags: para cada uno de los hashtags más mencionados, la cantidad de veces que aparece en los tuits.
+*	Top palabras: para cada una de las palabras más frecuentes (no se tienen en cuenta las stop words), la cantidad de veces que aparece en los tuits.
+*	Top usuarios mencionados: para cada uno de los usuarios más mencionados, la cantidad de veces que aparece en los tuits.
+*	Top usuarios activos: para cada uno de los usuarios más activos, la cantidad de tuits que han publicado.
 
 
 Los indicadores se extraen mediante el componente tweets_counter en dos pasos. El primer paso va descomponiendo cada tuit en entidades que se van acumulando de forma global. Una vez finalizado, el otro paso obtiene las entidades de cada tipo más frecuentes y se contabiliza su aparición día a día.
@@ -155,12 +125,12 @@ Primer paso:
 
 Para cada tuit:
 
-  Obtener autor y contabilizarlo
-  Obtener menciones a usuarios y contabilizarlas
-  Obtener el origen del tuit y contabilizarlo
-  Obtener la localización declarada del autor y almacenarla
-  Obtener las palabras del tuit que no sean stopwords y almacenarlas
-  Obtener los hashtags del tuit y almacenarlos
+:Obtener autor y contabilizarlo
+:Obtener menciones a usuarios y contabilizarlas
+:Obtener el origen del tuit y contabilizarlo
+:Obtener la localización declarada del autor y almacenarla
+:Obtener las palabras del tuit que no sean stopwords y almacenarlas
+:Obtener los hashtags del tuit y almacenarlos
   
 
 Segundo paso:
