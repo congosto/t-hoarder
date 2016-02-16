@@ -1,10 +1,10 @@
-1.1	PLATAFORMA T-HOARDER
+=	PLATAFORMA T-HOARDER =
 
 T-hoarder fue concebido como un medio para almacenar tuits sobre ciertos temas candentes en los que se pudieran analizar los distintos tipos de propagación que podían tener los mensajes. Actualmente la plataforma es una fuente de información elaborada, que puede ser consultada por aquellas personas que muestran un interés por los acontecimientos sociales en España. Ha transcendido su uso más allá de la investigación para dar a conocer la evolución de un conjunto de eventos de interés social como movilizaciones ciudadanas, opiniones sobre la crisis económica, escándalos políticos, corrupción, etc.
 
 La plataforma T-hoarder almacena tuits por líneas temáticas y los procesa automáticamente en tres ejes: temporal, espacial y de relevancia. El eje temporal permite ver tanto la evolución en el tiempo de un conjunto de indicadores como la proporción de mensajes retransmitidos, los usuarios más mencionados o más activos, los hashtags más populares, las palabras más frecuentes, etc. El eje espacial ubica los tuits geográficamente y la relevancia muestra los mensajes más difundidos. Esta plataforma está dotada de una interfaz gráfica interactiva que facilita la navegación por estos tres ejes.
 
-1.2	ARQUITECTURA T-HOARDER
+==	ARQUITECTURA T-HOARDER ==
 
 T-hoarder tiene una arquitectura sencilla que evita la dependencia de otros paquetes software. Utiliza Unix como sistema operativo y está desarrollado en Python. Para almacenar información usa ficheros Unix en vez de bases de datos por los siguientes motivos:
 *	Poder funcionar en entornos de desarrollo mínimos, como por ejemplo en una Raspberry PI.
@@ -23,7 +23,7 @@ Su arquitectura se estructura en tres capas desacopladas para evitar que el tiem
 
 Los componentes están programados en Python, estando formado el nombre de cada programa por el nombre del componente y la extensión “py”, siendo fácilmente localizables en el repositorio.
 
-1.2.1	CAPA 1: RECOGIDA Y ALMACENAMIENTO DE DATOS
+===	CAPA 1: RECOGIDA Y ALMACENAMIENTO DE DATOS ===
 
 T-hoarder dispone de una aplicación llamada Tweetdekc y un conjunto de usuarios en Twitter. Para poder acceder a las APIs de Twitter mediante OAuth es necesario crear las claves de acceso para la aplicación y para los usuarios. Estas claves se generan en el componente tweet_auth y quedan almacenadas en ficheros para que los componentes puedan autenticarse automáticamente ante las APIs.
 
