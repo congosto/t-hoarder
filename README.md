@@ -175,13 +175,13 @@ Obtener el top de autores, menciones, orígenes del tuit, localizaciones, palabr
 
 Para cada día:
 
-  Para cada tuit de ese día:
-  Contabilizar el top de autores
-  Contabilizar el top menciones a usuarios
-  Contabilizar el top de los orígenes del tuit
-  Contabilizar el top de localizaciones
-  Contabilizar el top de palabras
-  Contabilizar el top de hashtags
+  *Para cada tuit de ese día:
+  *Contabilizar el top de autores
+  *Contabilizar el top menciones a usuarios
+  *Contabilizar el top de los orígenes del tuit
+  *Contabilizar el top de localizaciones
+  *Contabilizar el top de palabras
+  *Contabilizar el top de hashtags
   
   
   
