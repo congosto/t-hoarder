@@ -57,15 +57,14 @@ Algunos datos como localización, nombre y bio pueden contener saltos de línea 
 Puede parecer poco eficiente almacenar información redundante como localización, nombre y bio pero se ha llegado a una solución de compromiso para que la información de los tuits esté auto-contenida, evitando la consulta de información exterior. Además, estos datos pueden cambiar con el tiempo, tanto que hasta existe la herramienta bioischanged  para conocer el historial de cambios de un usuario. Por este motivo, asociar esta información al momento en que se publicó el tuit es más riguroso.
 
 1.2.1.2	Almacenamiento de los datos
-Los datos se han organizado en una estructura de directorios predefinida y con una notación de prefijos y sufijos para facilitar la localización de la información almacenada. Desde una raíz inicial, denominada $STORE, se guardan los distintos flujos de datos de cada experimento y las claves de acceso a la API de Twitter (Figura 2).
+Los datos se han organizado en una estructura de directorios predefinida y con una notación de prefijos y sufijos para facilitar la localización de la información almacenada. Desde una raíz inicial, denominada $STORE, se guardan los distintos flujos de datos de cada experimento y las claves de acceso a la API de Twitter.
 
- 
-Figura 2 Estructura de directorios
 Los flujos de datos de cada experimento se archivan en paquetes de ficheros. Los ficheros se van generando con el patrón de nombre streaming_experimento_x.txt, (x: 0,n). El primer fichero se numera desde cero y cuando alcanza el tamaño de 100MB se comprime y se crea un nuevo fichero con una numeración creciente. Al ser ficheros de texto, la compresión es muy eficiente y el tamaño de los datos se reduce a la tercera parte.
 
 Debajo de $STORE se crea un directorio para cada experimento, cuyo nombre será datos_experimento_X. Dentro de ese directorio se encuentra el fichero para seleccionar los tuits, bien por palabras clave, por usuarios o por localizaciones. También se utiliza este directorio para almacenar los datos elaborados.
 
 Las claves de acceso de la aplicación y de los usuarios se archivan en el directorio $STORE/keys.
+
 1.2.2	CAPA 2: PROCESADO DE DATOS
 Esta capa se ejecuta de forma independiente a la captura y almacenamiento para evitar pérdida de tuits. Se utiliza un cron para ejecutar periódicamente los algoritmos de esta capa.
 
@@ -75,8 +74,8 @@ Los experimentos de larga duración podrían generar colecciones de datos muy gr
 2.	Al tener los ficheros un tamaño manejable, no hay problemas de escalabilidad de los algoritmos.
 3.	Es posible procesar en paralelo los distintos paquetes de ficheros.
 4.	No es necesario volver a procesar un paquete ya procesado, tan solo los datos nuevos desde la última iteración.
-En esta fase también se dispone de una estructura de directorios predeterminada. En el directorio $RESOURCES se almacenan los distintos recursos necesarios para procesar los datos, como por ejemplo: tablas de nombres por género, geolocalización de localidades, diccionarios para clasificar tuits, etc.
 
+En esta fase también se dispone de una estructura de directorios predeterminada. En el directorio $RESOURCES se almacenan los distintos recursos necesarios para procesar los datos, como por ejemplo: tablas de nombres por género, geolocalización de localidades, diccionarios para clasificar tuits, etc.
 
 En el directorio $WEB existirá un directorio para cada experimento en los que se almacenarán los datos elaborados para ser presentados en la interfaz gráfica web.
 
@@ -143,7 +142,9 @@ La difusión de mensajes se calcula por día y para todo el período de captura 
 •	Autor del tuit.
 •	Texto del tuit.
 •	Número de veces que se ha difundido.
+
 Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tuit es comparado con un buffer de tuits previos analizados. Si se detecta que es una retransmisión de algunos de ellos se incrementa el contador de RTs, en caso contrario se almacena en el buffer como nuevo mensaje. Cada hora o cada 15.000 tuits se salvan los 2.000 tuits más difundidos del buffer y el resto se descarta. De esta manera se evita que el número de comparaciones con tuits no difundidos ralenticen el proceso. Se mantiene un búfer global y otro del día.
+
 Para cada tuit:
   ¿Es RT de algún tuit del búfer global?
   Sí:
@@ -167,7 +168,7 @@ Para cada tuit:
 1.2.2.4	Extraer localización
 La ubicación de los tuits se puede conocer por dos caminos. El primero es por la localización declarada del perfil del usuario. Este dato puede no estar completado o contener el nombre de una ubicación ficticia por lo que no es posible ubicar todos los mensajes geográficamente. No obstante, es posible localizar un porcentaje elevado de tuits (entre el 60% - 70%). La segunda opción la proporcionan los tuits geolocalizados de los usuarios que tienen activada la geolocalización en Twitter. En este caso el porcentaje es mucho más pequeño (en España el 1,5%).
 
-Para la localización por perfil de usuario se utiliza un fichero con los municipios de España  a los que se les ha calculado previamente sus coordenadas (longitud y latitud) y se han clasificado por autonomía y provincia. Con estos datos se pueden situar los tuits en un mapa y también se pueden agregar por provincia o por autonomías. Para la geolocalización simplemente se extraen las coordenadas del tuit. 
+Para la localización por perfil de usuario se utiliza un fichero con los municipios de España  a los que se les ha calculado previamente sus coordenadas (longitud y latitud) y se han clasificado por autonomía y provincia. Con estos datos se pueden situar los tuits en un mapa y también se pueden agregar por provincia o por autonomías. Para la geolocalización simplemente se extraen las coordenadas del tuit.
 
 Para cada día se almacenan por un lado los tuits localizados por perfil del usuario y por otro los tuits geolocalizados. En ambos casos se guardan los mismos datos:
 •	Identificador del tuit
@@ -205,6 +206,7 @@ Cuando un paquete es procesado total o parcialmente se almacena, en un fichero d
 •	Longitud del paquete en el momento de procesarlo.
 •	Número de tuits.
 •	Tiempo de ejecución: tiempo de ejecución del paquete.
+
 1.2.2.6	Integración de resultados
 Los resultados están calculados por día, por lo que la integración es algo tan sencillo como la concatenación de resultados. Solo hay que tener en cuenta el efecto “borde” que se produce al dividir las colecciones de datos en paquetes de 100K. La partición puede dejar un día en diferentes paquetes.
 
@@ -236,12 +238,13 @@ Estos paneles se apoyan en los siguientes recursos:
 La creación de paneles se realiza con un conjunto de plantillas genéricas que se particularizan para cada caso mediante el comando make_panel.
 
 1.2.3.1	Plantilla de la página principal
-La plantilla home.html contiene la estructura del panel Web en la que se particulariza la descripción del experimento y el acceso a las distintas gráficas temporales o mapas. Para ello se sustituye el token “@experiment” por el nombre del experimento. La plantilla principal consta de cuatro partes (Figura 5):
+La plantilla home.html contiene la estructura del panel Web en la que se particulariza la descripción del experimento y el acceso a las distintas gráficas temporales o mapas. Para ello se sustituye el token “@experiment” por el nombre del experimento. La plantilla principal consta de cuatro partes:
 
 1.	Barra de navegación desde la que se puede acceder a la información de la plataforma. Esta barra es común a todos los paneles.
 2.	Descripción del experimento con las entidades que están siendo monitorizadas. Es un iframe con información textual.
 3.	Opciones de menú para seleccionar distintas vistas de la información: usuarios, tipo de tuits, hashtags y palabras más frecuentes, usuarios más mencionados y más activos, localización y geolocalización de los mensajes, información del dataset y la ayuda.
 4.	Gráficas interactivas con la información seleccionada en el menú. Es un iframe en el que se incrusta la página HTML que le corresponde a la opción del menú seleccionada. Existen dos tipos de gráficas, las temporales donde se muestra la evolución de los distintos indicadores y las geográficas que se representan mediante un mapa.
+
 
 1.2.3.2	Plantilla para gráficas temporales
 La plantilla grafica_panel_cgi.html contiene la estructura de la gráfica temporal que se particulariza para cada experimento. Para ello se sustituye el token “@experiment” por el nombre del dataset y el token “@data_file” por el nombre del fichero con los datos. Por lo tanto, esta plantilla se adapta a cada una de las gráficas temporales del experimento. 
