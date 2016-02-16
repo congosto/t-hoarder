@@ -19,6 +19,7 @@ T-hoarder tiene una arquitectura sencilla que evita la dependencia de otros paqu
 
 
 Su arquitectura se estructura en tres capas desacopladas para evitar que el tiempo de ejecución de una no interfiera sobre las otras. La comunicación entre estas capas es siempre mediante ficheros. La división funcional es la siguiente:
+
 •	Capa 1: Recolección y almacenamiento de datos
 
 •	Capa 2: Procesado de datos
@@ -46,23 +47,41 @@ Los flujos de datos se obtienen mediante el componente tweet_streaming. Se puede
 La API suministra los tuits solicitados en formato JSON. Los datos se transforman a texto plano separados por tabulaciones en una línea por mensaje. Esto permite leer los mensajes que se van recogiendo con facilidad e importarlos en una hoja de cálculo, si se desea.
 
 De toda la información recibida se seleccionan los datos que son de utilidad para analizar el contexto del tuit:
+
 •	id_tweet: identificador del tuit. Es un número creciente que va asignando Twitter secuencialmente a cada mensaje.
+
 •	timestamp: fecha y hora GMT de tuit.
+
 •	@autor: nombre de usuario del autor del tuit.
+
 •	texto: texto del tuit.
+
 •	app: aplicación desde la que se ha publicado el tuit.
+
 •	id_autor: identificador del autor. Es un número creciente que va asignando Twitter a los usuarios conforme se van dando de alta.
+
 •	seguidores: número de seguidores en el momento de la publicación.
+
 •	siguiendo: número de usuarios seguidos en el momento de la publicación.
+
 •	mensajes: número de tuits publicados anteriormente.
+
 •	localización: localización declarada en el perfil de usuario.
+
 •	url: enlace si el tuit contiene una URL, en caso contrario se almacena el valor None.
+
 •	geolocalización: coordenadas si el tuit está geolocalizado, en caso contrario se almacena None.
+
 •	nombre: nombre proporcionado por el usuario.
+
 •	bio: descripción del usuario.
+
 •	url_media: URL si el tuit contiene información multimedia, en caso contrario se almacena el valor None.
+
 •	tipo_media: tipo de información multimedia (foto, video,.), en caso de no existir, su valor es None.
+
 •	lenguaje: idioma del tuit, si se ha podido detectar.
+
 Algunos datos como localización, nombre y bio pueden contener saltos de línea o tabulaciones. Para evitar conflictos con los delimitadores se filtran las tabulaciones y los saltos de línea en estos datos.
 
 Puede parecer poco eficiente almacenar información redundante como localización, nombre y bio pero se ha llegado a una solución de compromiso para que la información de los tuits esté auto-contenida, evitando la consulta de información exterior. Además, estos datos pueden cambiar con el tiempo, tanto que hasta existe la herramienta bioischanged  para conocer el historial de cambios de un usuario. Por este motivo, asociar esta información al momento en que se publicó el tuit es más riguroso.
@@ -95,10 +114,15 @@ En el directorio $WEB existirá un directorio para cada experimento en los que s
 Para cada uno de los paquetes se realizan las siguientes operaciones:
 
 •	Filtrar los falsos positivos
+
 •	Extraer los indicadores 
+
 •	Extraer relevancia
+
 •	Extraer localización
+
 •	Generar estado del paquete
+
 
 1.2.2.1	Filtrado de falsos positivos
 
@@ -109,39 +133,67 @@ El filtrado se realiza mediante el componente tweets_select_filter que permite s
 1.2.2.2	Extraer los indicadores
 
 Para observar la evolución de los datos almacenados se van calculando una serie de indicadores para cada día que serán expuestos más tarde en el eje temporal. Estos indicadores proporcionan una idea de la participación y modo de publicación de los mensajes:
+
 •	Número de tuits: cantidad de tuits recogidos.
+
 •	Número de RTs: cantidad de tuits que son difundidos mediante el mecanismo de retransmisión.
+
 •	Número de replies: cantidad de tuits que son respuestas a otro tuit.
+
 •	Número de menciones: cantidad de tuits que contienen menciones.
+
 •	Número de usuarios únicos: cantidad de usuarios diferentes que han tuiteado.
+
 •	Número de usuarios nuevos: cantidad de usuarios que tuitean por primera vez ese día.
+
 •	Top hashtags: para cada uno de los hashtags más mencionados, la cantidad de veces que aparece en los tuits.
+
 •	Top palabras: para cada una de las palabras más frecuentes (no se tienen en cuenta las stop words), la cantidad de veces que aparece en los tuits.
+
 •	Top usuarios mencionados: para cada uno de los usuarios más mencionados, la cantidad de veces que aparece en los tuits.
+
 •	Top usuarios activos: para cada uno de los usuarios más activos, la cantidad de tuits que han publicado.
+
 
 Los indicadores se extraen mediante el componente tweets_counter en dos pasos. El primer paso va descomponiendo cada tuit en entidades que se van acumulando de forma global. Una vez finalizado, el otro paso obtiene las entidades de cada tipo más frecuentes y se contabiliza su aparición día a día.
 
 Primer paso:
 
 Para cada tuit:
+
   Obtener autor y contabilizarlo
+  
   Obtener menciones a usuarios y contabilizarlas
+  
   Obtener el origen del tuit y contabilizarlo
+  
   Obtener la localización declarada del autor y almacenarla
-  Obtener las palabras del tuit que no sean stopwords y almacenarlas  
+  
+  Obtener las palabras del tuit que no sean stopwords y almacenarlas
+  
   Obtener los hashtags del tuit y almacenarlos
+  
 
 Segundo paso:
+
 Obtener el top de autores, menciones, orígenes del tuit, localizaciones, palabras y hashtags
+
 Para cada día:
-Para cada tuit de ese día:
+
+  Para cada tuit de ese día:
+
   Contabilizar el top de autores
+  
   Contabilizar el top menciones a usuarios
+  
   Contabilizar el top de los orígenes del tuit
+  
   Contabilizar el top de localizaciones
+  
   Contabilizar el top de palabras
+  
   Contabilizar el top de hashtags
+  
   
   
 1.2.2.3	Extraer relevancia
@@ -153,33 +205,58 @@ T-hoarder descarta usar el dato del número de RTs que suministra la API de Twit
 Se considera que un tuit es la retransmisión de otro cuando comienza por “RT @usuario” y el resto del texto coincide más de un 90% con algún tuit original anterior (Figura 4). La coincidencia puede no ser del 100% porque al retransmitirse mensajes de casi 140 caracteres se truncan, como es el caso del ejemplo siguiente.
 
 La difusión de mensajes se calcula por día y para todo el período de captura de tuits. De esta forma se conoce lo más relevante de cada jornada y lo más destacado en global. Los datos que se almacenan de los tuits más difundidos son:
+
 •	Identificador del tuit.
+
 •	Fecha y hora del tuit.
+
 •	Autor del tuit.
+
 •	Texto del tuit.
+
 •	Número de veces que se ha difundido.
+
 
 Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tuit es comparado con un buffer de tuits previos analizados. Si se detecta que es una retransmisión de algunos de ellos se incrementa el contador de RTs, en caso contrario se almacena en el buffer como nuevo mensaje. Cada hora o cada 15.000 tuits se salvan los 2.000 tuits más difundidos del buffer y el resto se descarta. De esta manera se evita que el número de comparaciones con tuits no difundidos ralenticen el proceso. Se mantiene un búfer global y otro del día.
 
 Para cada tuit:
+
   ¿Es RT de algún tuit del búfer global?
+  
   Sí:
+  
     Incrementar contador de RT del tuit del búfer global
+    
   No:
+  
    Almacenar el tuit en el búfer global
+   
   ¿Es RT de algún tuit del búfer del día?
+  
   Sí:
+  
     Incrementar contador de RT del tuit del búfer del día
+    
   No:
+  
     Almacenar el tuit en el buffer del día
+    
   ¿Hay cambio de hora o el búfer tiene más de 15000 tuits?
+  
   Sí:
+  
     Reducir el búfer global a los 2000 tuits con más RTs
+    
     Reducir el búfer del día a los 2000 tuits con más RTs
+    
   ¿Hay cambio de día?
+  
   Sí:
+  
     Almacenar el búfer del día
+    
     Vaciar el búfer del día
+    
 
 1.2.2.4	Extraer localización
 
@@ -188,42 +265,73 @@ La ubicación de los tuits se puede conocer por dos caminos. El primero es por l
 Para la localización por perfil de usuario se utiliza un fichero con los municipios de España  a los que se les ha calculado previamente sus coordenadas (longitud y latitud) y se han clasificado por autonomía y provincia. Con estos datos se pueden situar los tuits en un mapa y también se pueden agregar por provincia o por autonomías. Para la geolocalización simplemente se extraen las coordenadas del tuit.
 
 Para cada día se almacenan por un lado los tuits localizados por perfil del usuario y por otro los tuits geolocalizados. En ambos casos se guardan los mismos datos:
+
 •	Identificador del tuit
+
 •	Fecha y hora del tuit
+
 •	Autor
+
 •	Texto del tuit
+
 •	Coordenadas
+
 Las localizaciones se obtienen con el componente tweets_location que analiza la localización declarada del autor del tuit y comprueba si coincide con algún municipio, provincia o autonomía de España.
 
 Para cada tuit
-¿Localización coincide con municipio?
+
+  ¿Localización coincide con municipio?
+
   Sí:
+  
     Agregar las coordenadas del municipio
+    
   No:
+  
     ¿Localización coincide con provincia?
+    
     Sí:
+    
       Agregar las coordenadas de la capital provincia
+      
     No:
+    
       ¿Localización coincide con la autonomía?
+      
       Sí:
+      
         Agregar las coordenadas de la capital de la autonomía
+        
 ¿Está el tuit localizado?
+
 Sí:
+
   Añadir al fichero de localizaciones
+  
 ¿Está el tuit geolocalizado?
+
 Sí:
+
   Añadir al fichero de geolocalizaciones
   
 1.2.2.5	Generar estado del paquete
 
 Cuando un paquete es procesado total o parcialmente se almacena, en un fichero denominado experimento_x_status.txt, una información de estado: 
+
 •	Fecha inicial: fecha de tuit más antiguo.
+
 •	Fecha final: fecha de tuit más reciente.
+
 •	Estado: estado del proceso del paquete. Puede tomar los valores: semi-procesado, procesado.
+
 •	Ultimo tuit procesado: identificador del último tuit procesado.
+
 •	Longitud del paquete en el momento de procesarlo.
+
 •	Número de tuits.
+
 •	Tiempo de ejecución: tiempo de ejecución del paquete.
+
 
 1.2.2.6	Integración de resultados
 
@@ -234,16 +342,27 @@ En el caso de los tops (palabras, hashtags, usuarios mencionados y usuarios acti
 Los resultados se depositan en el directorio de intercambio $WEB para que el servidor web pueda acceder a ellos. El formato es texto plano con separadores y adaptado a las herramientas de visualización. Los datos se integran con el componente join_results.
 
 Para cada paquete de datos
+
   Almacenar contadores de entidades
+  
   Almacenar top de entidades (teniendo en cuenta que un día puede estar en dos paquetes diferentes)
+  
   Almacenar RTs globales
+  
   Almacenar RTs por día (teniendo en cuenta que un día puede estar en dos paquetes diferentes)
+  
   Almacenar localizaciones
+  
 Generar resultado final de contadores de entidades
+
 Generar top de entidades reduciendo el top de 1000 a 10
+
 Generar RTs globales
+
 Generar RTs por día
+
 Generar localizaciones
+
 
 1.2.3	CAPA 3: VISUALIZACIÓN
 
@@ -252,9 +371,13 @@ Para conocer la evolución de la información recuperada, T-hoarder dispone de u
 El <iframe> es un recurso HTML que permite anidar documentos HTML. Es muy utilizado para incrustar pequeñas piezas HTML con una función específica dentro de una página web. El diseño con <iframe> permite construir las webs como si fueran un puzle.
 
 Estos paneles se apoyan en los siguientes recursos:
+
 •	El framework boostrap  de HTML, estilos CSS y JavaScript que permiten dar una estructura, un estilo y una interactividad a los distintos elementos del panel.
+
 •	La librería dygraphs  para las gráficas temporales, que tiene opciones avanzadas para favorecer la interactividad, permitiendo hacer zoom y llamar a funciones desde un punto de la gráfica para contextualizar la información.
+
 •	Google Maps para la visualización de mapas (en un futuro en Cartodb ).
+
 La creación de paneles se realiza con un conjunto de plantillas genéricas que se particularizan para cada caso mediante el comando make_panel.
 
 1.2.3.1	Plantilla de la página principal
