@@ -298,11 +298,11 @@ Las gráficas temporales constan de dos partes interrelacionadas:
 
 <h4>	Plantilla para localización de tuits</h4>
 
-La plantilla grafica_location contiene un plano de Google Maps en el que se representa la frecuencia de tuits por áreas mediante un mapa de calor, resaltando con un código de color las zonas más densas de tuits. Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. 
+La plantilla grafica_location.html contiene un plano de Google Maps en el que se representa la frecuencia de tuits por áreas mediante un mapa de calor, resaltando con un código de color las zonas más densas de tuits. Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. 
 
 <h4>	Plantilla para geolocalización de tuits</h4>
 
-La plantilla grafica_geolocation contiene un mapa de Google Maps para situar los tuits geolocalizados mediante un puntero (Figura 8). Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. Pasando el ratón por el puntero se puede leer el mensaje publicado en ese lugar.
+La plantilla grafica_geolocation.html contiene un mapa de Google Maps para situar los tuits geolocalizados mediante un puntero. Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. Pasando el ratón por el puntero se puede leer el mensaje publicado en ese lugar.
 
 
 
