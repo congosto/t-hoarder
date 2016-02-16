@@ -265,9 +265,9 @@ Generar localizaciones
 
 <h3>CAPA 3: VISUALIZACIÓN</h3>
 
-Para conocer la evolución de la información recuperada, T-hoarder dispone de unos paneles web que permiten visualizar los datos procesados. Estos paneles están construidos mediante una estructura que alberga <iframes>.
+Para conocer la evolución de la información recuperada, T-hoarder dispone de unos paneles web que permiten visualizar los datos procesados. Estos paneles están construidos mediante una estructura que alberga iframes.
 
-El <iframe> es un recurso HTML que permite anidar documentos HTML. Es muy utilizado para incrustar pequeñas piezas HTML con una función específica dentro de una página web. El diseño con <iframe> permite construir las webs como si fueran un puzle.
+El iframe es un recurso HTML que permite anidar documentos HTML. Es muy utilizado para incrustar pequeñas piezas HTML con una función específica dentro de una página web. El diseño con iframe permite construir las webs como si fueran un puzle.
 
 Estos paneles se apoyan en los siguientes recursos:
 
