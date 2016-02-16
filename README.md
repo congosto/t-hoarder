@@ -168,6 +168,7 @@ La difusión de mensajes se calcula por día y para todo el período de captura 
 
 Los mensajes más difundidos se obtienen con el componente tweets_talk. Cada tuit es comparado con un buffer de tuits previos analizados. Si se detecta que es una retransmisión de algunos de ellos se incrementa el contador de RTs, en caso contrario se almacena en el buffer como nuevo mensaje. Cada hora o cada 15.000 tuits se salvan los 2.000 tuits más difundidos del buffer y el resto se descarta. De esta manera se evita que el número de comparaciones con tuits no difundidos ralenticen el proceso. Se mantiene un búfer global y otro del día.
 
+<display>
 Para cada tuit:
 
   ¿Es RT de algún tuit del búfer global?
@@ -205,7 +206,7 @@ Para cada tuit:
     Almacenar el búfer del día
     
     Vaciar el búfer del día
-    
+</display>    
 
 1.2.2.4	Extraer localización
 
