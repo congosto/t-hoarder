@@ -26,9 +26,11 @@ import argparse
 def get_access_key(keys_app_file, username):
   keys_app=[]
   f = open(keys_app_file, 'rU')
-  for line in f: 
-    keys_app.append(line[:-1])
-   
+  for line in f:
+    this_line = line.rstrip()
+    keys_app.append(this_line)
+
+  print keys_app
   auth = tweepy.OAuthHandler(keys_app[0], keys_app[1])
   auth.secure = True
 
@@ -36,19 +38,21 @@ def get_access_key(keys_app_file, username):
   webbrowser.open(auth.get_authorization_url())
 
   # Ask user for verifier pin
-  pin = raw_input('Verification pin number from twitter.com: ').strip()
+  pin = raw_input('Verification pin number from twitter.com: ').rstrip()
 
   # Get access token
+  print pin
   token = auth.get_access_token(verifier=pin)
+  print token
 
   # Give user the access token
   print 'Access token:'
-  print ' Key: %s' % token.key
-  print ' Secret: %s' % token.secret
+  print ' Key: %s' % token[0]
+  print ' Secret: %s' % token[1]
   file_out= username+'.key'
   f_out=  open(file_out, 'w')  
-  f_out.write ("%s\n" % ( token.key))
-  f_out.write ("%s\n" % ( token.secret))
+  f_out.write ("%s\n" % ( token[0]))
+  f_out.write ("%s\n" % ( token[1]))
   return
 
 def main():

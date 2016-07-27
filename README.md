@@ -303,3 +303,7 @@ La plantilla grafica_location.html contiene un plano de Google Maps en el que se
 <h4>	Plantilla para geolocalización de tuits</h4>
 
 La plantilla grafica_geolocation.html contiene un mapa de Google Maps para situar los tuits geolocalizados mediante un puntero. Se particulariza sustituyendo el token “@data_file” por el nombre del fichero con los datos. Pasando el ratón por el puntero se puede leer el mensaje publicado en ese lugar.
+
+## Licencia
+
+Este texto está licenciado con la licencia GPL de la GNU. Puedes consultarlo en el fichero [`LICENSE`](LICENSE) o en la [web de la GNU](https://www.gnu.org/licenses/licenses.es.html#GPL)
