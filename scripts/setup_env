@@ -1,18 +1,10 @@
 #!/bin/bash
 # shell script for install t-hoarder
-if [ -d ../../t-hoarder ]
+if [ ! -d ../t-hoarder ]
   then
-    cd ..
-  else
     echo " t-hoarder directory doesn't exist"
     exit
 fi
-mkdir scripts
-cp t-hoarder-master/*.py scripts 
-cp t-hoarder-master/make* scripts
-cp t-hoarder-master/join* scripts
-cp -r t-hoarder-master/resources .
-cp -r t-hoarder-master/templates .
 mkdir store
 mkdir keys
 mkdir web

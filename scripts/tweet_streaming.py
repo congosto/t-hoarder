@@ -247,35 +247,43 @@ def main():
   track_list=None
   locations_list=None
   locations_list_int=[]
+#entorno
   
   reload(sys)
   sys.setdefaultencoding('utf-8')
   sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
   parser = argparse.ArgumentParser(description='get tweets from Streaming API ')
+  parser.add_argument('root', type=str, help='  t-hoarder root')
+  parser.add_argument('experiment', type=str, help='name experiment')
   parser.add_argument('app_keys', type=str, help='file with keys app')
   parser.add_argument('user_keys', type=str,help='file with user token access')
-  parser.add_argument('dir_out', type=str, help='Dir data output')
-  parser.add_argument('file_dest', type=str, help='file to store raw tweets')
-  parser.add_argument('--users', type=str, default='', help='get tweets for id_tweets')
-  parser.add_argument('--words', type=str, default='', help='get tweets for keywords')
-  parser.add_argument('--locations', type=str, default='', help='get tweets for location')
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument('--users', type=str, default='', help='get tweets for id_tweets')
+  group.add_argument('--words', type=str, default='', help='get tweets for keywords')
+  group.add_argument('--locations', type=str, default='', help='get tweets for location')
   args = parser.parse_args()
   
-  app_keys_file= args.app_keys
-  user_keys_file= args.user_keys
-  dir_dest= args.dir_out
-  file_out= args.file_dest
+  path_root=args.root
+  experiment=args.experiment 
+# enviroment
+  path_keys=path_root+'/t-hoarder/keys/'
+  path_store=path_root+'/t-hoarder/store/'
+  path_experiment=path_root+'/t-hoarder/store/datos_'+experiment+'/'
+# end enviroment
+  app_keys_file= path_keys+args.app_keys
+  user_keys_file= path_keys+args.user_keys
   file_users=args.users
   file_words=args.words
   file_location = args.locations
   if file_users != '':
-    follow_list=get_list (file_users)
+    follow_list=get_list (path_experiment+file_users)
   if file_words != '':
-    track_list=get_list (file_words)
+    track_list=get_list (path_experiment+file_words)
   if file_location != '':
-     locations_list=get_list (file_location)
+     locations_list=get_list (path_experiment+file_location)
      for location in locations_list:
         locations_list_int.append (float(location))
+  file_out=path_store+experiment+'.txt'
   filename=re.search (r"([\w-]+)\.([\w]+)*", file_out)
   if not filename:
     print "%s bad filename, it must have an extension xxxx.xxx",file_out
@@ -285,7 +293,7 @@ def main():
   print '-->File output: ', file_out
   oauth=oauth_keys(app_keys_file,user_keys_file)
   auth=oauth.get_auth()
-  stream = tweepy.Stream(auth, StreamWatcherListener(dir_dest,prefix,ext,auth), timeout=None)  
+  stream = tweepy.Stream(auth, StreamWatcherListener(path_store,prefix,ext,auth), timeout=None)  
     # Prompt for mode of streaming
   print follow_list,track_list,locations_list_int
   stream.filter(follow_list, track_list,False,locations_list_int)
