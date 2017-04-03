@@ -3,7 +3,7 @@
 
 if [ $# -ne 4 ]
 then
-   echo "usage: make_blocks experiment store resources TZ"
+   echo "usage: make_blocks experiment store resources"
       exit 1
 fi
 
@@ -11,8 +11,7 @@ fi
 experiment=$1
 store=$2
 resources=$3
-TZ=$4
-
+tz=$4
 
 path=${name_file%/*}
 file_in=${name_file##*/}
@@ -26,13 +25,20 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
   file_in=${file##*/}
   base=${file_in%%.*}
   status_file=${base}_counter_status.txt
+  
   echo "file status ${store}/datos_${experiment}/${status_file}/"
   if [ -e ${store}/datos_${experiment}/${status_file} ]
   then 
     echo " Package counters done ${store}/${file_in}  "
   else
+    if [ -e "${store}/datos_${experiment}/filter.txt" ]
+    then
+      echo "quito spam"
+      $HOME/t-hoarder/tweets_select_filter.py ${file_in} --dir_in ${store}/ --filter_users ${store}/datos_${experiment}/filter.txt --filter_names ${store}/datos_${experiment}/filter.txt
+      file_in=${base}.sel.gz
+    fi
     echo " running package counters ${store}/ ${file_in}  "
-    tweets_counter.py ${file_in} --filter ./languages/filter.all  --d_in ${store}/ --d_out ${web}/ --TZ ${TZ}
+    $HOME/t-hoarder/tweets_counter.py ${file_in} --stopwords ${store}/languages/filter.all  --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/ --TZ ${tz}
   fi 
   status_file=${base}_talk_status.txt
   if [ -e ${store}/datos_${experiment}/${status_file} ]
@@ -40,7 +46,7 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     echo " Package talk done ${store}/${file_in}  "
   else
     echo " running package talk ${store}/ ${file_in}  "
-    tweets_talk.py ${file_in}   --d_in ${store}/ --d_out ${web}/ --TZ ${TZ}
+    $HOME/t-hoarder/tweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/ --TZ ${tz}
   fi 
   status_file=${base}_loc_status.txt
   if [ -e ${store}/datos_${experiment}/${status_file} ]
@@ -48,10 +54,6 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     echo " Package location done ${store}/${file_in}  "
   else
     echo " running package location ${store}/ ${file_in}  "
-    tweets_location.py ${file_in} ${resources}/recursos_loc.txt --d_in ${store}/ --d_out ${web}/ --TZ ${TZ}
+#    $HOME/t-hoarder/tweets_location.py ${file_in} ${resources}/recursos_loc.txt --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/
   fi 
 done 
-
-
-
-
