@@ -1,9 +1,9 @@
 #!/bin/bash
 # shell script for procesing blocks
 
-if [ $# -ne 4 ]
+if [ $# -ne 5 ]
 then
-   echo "usage: make_experiment experiment store resources web"
+   echo "usage: make_experiment experiment store resources web TZ"
       exit 1
 fi
 
@@ -12,13 +12,14 @@ experiment=$1
 store=$2
 resources=$3
 web=$4
+TZ=$5
 
 echo "... running packages"
-$HOME/t-hoarder/make_blocks ${experiment}  ${store}/  ${resources}/ 
+$HOME/t-hoarder/make_blocks ${experiment}  ${store}/  ${resources}/  ${TZ}
 echo "... running last_tweets"
-$HOME/t-hoarder/make_last_tweets ${experiment}  ${store}/  ${resources}/
+$HOME/t-hoarder/make_last_tweets ${experiment}  ${store}/  ${resources}/  ${TZ}
 echo "... running joint_results"
-$HOME/t-hoarder/join_results.py ${experiment}  --dir_in ${store}/datos_${experiment} --dir_out ${web}/${experiment}
+$HOME/t-hoarder/join_results.py ${experiment}  --dir_in ${store}/datos_${experiment} --dir_out ${web}/${experiment} 
 
 
 

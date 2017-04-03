@@ -1,9 +1,9 @@
 #!/bin/bash
 # shell script for procesing last tweets
 
-if [ $# -ne 3 ]
+if [ $# -ne 4 ]
 then
-   echo "usage: make_last_tweets experiment store resources"
+   echo "usage: make_last_tweets experiment store resources TZ"
       exit 1
 fi
 
@@ -11,6 +11,7 @@ fi
 experiment=$1
 store=$2
 resources=$3
+TZ=$4
 
 
 path=${name_file%/*}
@@ -33,11 +34,11 @@ for file in $(ls ${store}/*${experiment}_*.txt); do
       file_in=${base}.sel
   fi
   echo " running package counters ${store}/ ${file_in}  "
-  $HOME/t-hoarder/tweets_counter.py ${file_in} --stopwords ${store}/languages/filter.all  --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/
+  $HOME/t-hoarder/tweets_counter.py ${file_in} --filter ${store}/languages/filter.all  --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/ --TZ ${TZ}
   echo " running package talk ${store}/ ${file_in}  "
-  $HOME/t-hoarder/tweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/
+  $HOME/t-hoarder/tweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/ --TZ ${TZ}
   echo " running package location ${store}/ ${file_in}  "
-  $HOME/t-hoarder/tweets_location.py ${file_in} ${resources}/recursos_loc.txt --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/
+  $HOME/t-hoarder/tweets_location.py ${file_in} ${resources}/recursos_loc.txt --dir_in ${store}/ --dir_out ${store}/datos_${experiment}/ --TZ ${TZ}
 done 
 
 

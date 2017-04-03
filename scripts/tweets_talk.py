@@ -287,7 +287,20 @@ def  print_top_sentences (dir_in,dir_out,dict_date,rank_sentences,dict_id_tweets
       break
     f_out.write (('%s\t%s\t%s\t%s\t%s\n') % (dict_date[text,author],author,text,count,id_tweet))
     num_sentences += 1  
-  return  
+  return 
+  
+def  print_top_sentences_day (day,dir_in,dir_out,dict_date,rank_sentences,dict_id_tweets,size_sentences,f_out): 
+# extract and print top sentences
+  num_sentences=0
+  for  (count,tweet) in rank_sentences:
+    (text,author)=tweet
+    author_sin=author[1:]
+    id_tweet=dict_id_tweets[text,author]
+    if num_sentences > size_sentences:
+      break
+    f_out.write (('%s\t%s\t%s\t%s\t%s\t%s\n') % (day,dict_date[text,author],author,text,count,id_tweet))
+    num_sentences += 1  
+  return   
   
   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -340,7 +353,7 @@ def main():
   prefix=filename.group(1)
   extension=filename.group(2)
   print extension
-  if extension == 'txt.tar.gz':
+  if extension.find('.gz') != -1:
     flag_compress=True
   try:  
     if flag_compress:
@@ -355,9 +368,9 @@ def main():
  
   sentences= Sentence_similarity(dir_out,prefix,max_sentences)
   sentences_day=Sentence_similarity(dir_out,prefix,max_sentences)
-  f_out_global = codecs.open(prefix+'_global_sentences.csv', 'w',encoding='utf-8')
-  f_out_day = codecs.open(prefix+'_day_sentences.csv','w',encoding='utf-8')
-  f_out_recent = codecs.open(prefix+'_recent_sentences.csv','w',encoding='utf-8')
+  f_out_global = codecs.open(dir_out+prefix+'_global_sentences.csv', 'w',encoding='utf-8')
+  f_out_day = codecs.open(dir_out+prefix+'_day_sentences.csv','w',encoding='utf-8')
+  f_out_recent = codecs.open(dir_out+prefix+'_recent_sentences.csv','w',encoding='utf-8')
   for line in f_in:
     if  type(line) is str:
       line=unicode(line, "utf-8")
@@ -420,7 +433,7 @@ def main():
         sentences_rank_order=sorted([(value,key) for (key,value) in dict_sentences_count.items()],reverse=True) 
         day_str= str(last_day)
         list_dates_str.append(day_str)
-        print_top_sentences (dir_in,dir_out,dict_date,sentences_rank_order,dict_id_tweets,num_sentences,f_out_day)
+        print_top_sentences_day (day_str,dir_in,dir_out,dict_date,sentences_rank_order,dict_id_tweets,num_sentences,f_out_day)
         #sentences_day.reset_sentences()
         sentences_day=Sentence_similarity(dir_out,prefix,max_sentences)
         last_day=current_day
@@ -448,10 +461,10 @@ def main():
   print num_sentences, len (dict_sentences_count)
   if num_sentences > max_sentences_print_day:
    num_sentences= max_sentences_print_day
-  day_str= str(last_day)
   sentences_rank_order=sorted([(value,key) for (key,value) in dict_sentences_count.items()],reverse=True) 
+  day_str= str(current_day)
   print_top_sentences (dir_in,dir_out,dict_date,sentences_rank_order,dict_id_tweets,num_sentences,f_out_recent)
-  print_top_sentences (dir_in,dir_out,dict_date,sentences_rank_order,dict_id_tweets,num_sentences,f_out_day)
+  print_top_sentences_day (day_str,dir_in,dir_out,dict_date,sentences_rank_order,dict_id_tweets,num_sentences,f_out_day)
   
   list_texts = sentences.get_texts()
   dict_id_tweets= sentences.get_id_tweets ()

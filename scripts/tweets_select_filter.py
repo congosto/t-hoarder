@@ -23,18 +23,18 @@ import time
 import datetime
 import unicodedata
 import codecs
+import gzip
 import argparse
   
 def filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
   author=author.lower()
-  text=text.lower()
   if  author in filter_users:
     return True
   if  author[1:] in filter_users:
     return True
   words=re.findall (r'[@#]*[-\w]+', text,re.U)
   for word in words:
-    if word.lower() in filter_words:
+    if word in filter_words:
       return True 
   for name in filter_names:  
     if text.find(name) != -1:
@@ -49,14 +49,13 @@ def filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
   
 def select_tweet (author,text,loc,select_users,select_words,select_names):
   author=author.lower()
-  text=text.lower()
   if  author in select_users:
     return True
   if  author[1:] in select_users:
     return True
   words=re.findall (r'[@#]*[-\w]+', text,re.U)
   for word in words:
-    if word.lower() in select_words:
+    if word in select_words:
       return True 
   for name in select_names:  
     if text.find(name) != -1:
@@ -76,7 +75,7 @@ def get_data (file_in):
   for line in f: 
       line= line.strip("\n")
       data=line.split('\t')
-      dict_data[(data[0].lower())]=1
+      dict_data[(data[0])]=1
   f.close()
   print len(dict_data)
   return dict_data
@@ -100,6 +99,7 @@ def main():
   flag_filter=False
   flag_from=False
   flag_to=False
+  flag_compress=False
   
   reload(sys)
   sys.setdefaultencoding('utf-8')
@@ -117,7 +117,6 @@ def main():
   parser.add_argument('--date_to', type=str, default='', help='get tweets to this date')
   parser.add_argument('--dir_in', type=str, default='./', help='dir data input')
   parser.add_argument('--dir_out', type=str, default='./', help='dir data output')
-  parser.add_argument('--file_out', type=str, default='', help='file to store result')
   args = parser.parse_args()
 
   file_in=args.file_in
@@ -152,27 +151,40 @@ def main():
     flag_to=True
   dir_in=args.dir_in
   dir_out=args.dir_out
-  file_out=args.file_out
-  filename=re.search (r"([\w-]+)\.([\w]*)", file_in)
+  filename=re.search (r"([\w-]+)\.([\w\.]*)", file_in)
   if not filename:
     print "bad filename",file_in, ' Must be an extension'
     exit (1)
   name=filename.group(0)
   prefix=filename.group(1)
   extension=filename.group(2)
-  file_out=prefix+'_sel.'+extension
   # get start time and end time 
+  print extension
+  if extension == 'txt.tar.gz':
+    flag_compress=True
   try:  
-    f_in = codecs.open(dir_in+file_in, 'rU',encoding='utf-8')
+    if flag_compress:
+      f_in=gzip.open(dir_in+file_in, 'rb')
+      file_out=dir_in+prefix+'.sel.gz'
+      print 'open as compress'
+    else:
+      f_in = codecs.open(dir_in+file_in, 'rU',encoding='utf-8')
+      file_out=dir_in+prefix+'.sel'
+      print 'open as unicode'
   except:
-    print 'Can not open file',file_in
+    print 'Can not open file',dir_in+file_in
     exit (1)
-  f_out= codecs.open(dir_out+file_out,'w',encoding='utf-8')
-  f_filter= codecs.open(dir_out+prefix+'_filter.txt','w',encoding='utf-8')   
+  if flag_compress:
+    f_out=gzip.open(file_out, 'wb')
+  else:
+    f_out= codecs.open(file_out,'w',encoding='utf-8')
   print 'reading tweets'  
   num_select_tweets=0
   num_tweets=0
   for line in f_in:
+    line_raw=line
+    if  type(line) is str:
+      line=unicode(line, "utf-8")
     tweets= re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\t(@\w+)\t([^\t\n]+)\tvia=([^\t\n]+)\tid=(\S+)\tfollowers=(\S+)\tfollowing=(\S+)\tstatuses=(\S+)\tloc=([^\t\n]*)',line,re.U)
     if not tweets:
       print 'Not mach-->'
@@ -184,27 +196,26 @@ def main():
       if num_tweets % 100000 == 0:
         print num_tweets  
       if day_str in filter_days:
-        f_filter.write(line)
+        pass
       elif flag_from and  current_day < from_day:   
-         f_filter.write(line)
+         pass
       elif flag_to and current_day > to_day: 
-         f_filter.write(line) 
+         pass
       elif flag_filter:
-        if filter_tweet (author,text,loc,filter_users,filter_words,filter_names): 
-          f_filter.write(line) 
+        if filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
+          pass 
         else:  
-          f_out.write(line)
+          f_out.write(line_raw)
       elif flag_select:
         if select_tweet (author,text,loc,select_users,select_words,select_names):
-           f_out.write (line)
+           f_out.write (line_raw)
         else:  
-          f_filter.write(line)
+          pass
       else:  
-          f_out.write(line)
+        f_out.write(line_raw)
 
   f_in.close() 
   f_out.close() 
-  f_filter.close()  
   exit(0)
 
 if __name__ == '__main__':

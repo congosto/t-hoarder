@@ -122,6 +122,28 @@ class JoinCounters(object):
     self.entities_day={}
     self.top_talk=AvgDict()
     self.talk_day={}
+    self.num_pack=0
+    self.last_day_talk=self.last_day_talk=datetime.datetime.strptime('2000-01-01','%Y-%m-%d').date()
+    
+    file_status='%s/%s_join_status.txt' % (self.dir_out,self.experiment)
+    try:
+      f_status=codecs.open(file_status, 'rU',encoding='utf-8')
+      print 'open context',file_status
+      print 'getting context'  
+      for line in f_status:
+        line=line.strip('\n')
+        data=line.split('\t')
+        if data[0] == u'number of packs':
+          self.num_pack= int(data[1])
+        elif data[0] == u'last_day_talk':
+          match=re.search(r'(\d\d\d\d-\d\d-\d\d)',data[1],re.U)
+          if match:
+            self.last_day_talk=datetime.datetime.strptime(match.group(1),'%Y-%m-%d').date()
+            print 'select talk day since',self.last_day_talk
+          else:
+           print 'not match date in last day talk'
+    except:
+      print 'File status not created yet',file_status
     return
     
   def reset_context(self):
@@ -262,6 +284,67 @@ class JoinCounters(object):
     f_out.close()
     return
     
+  def talk_top_date(self,pack,file_talk_day):
+    file_in='%s/streaming_%s_%s_%s' % (self.dir_in,self.experiment,pack,file_talk_day)
+    #print '---> open file',file_in
+    try:
+      f_in=codecs.open(file_in, 'rU',encoding='utf-8')
+    except:
+      print 'can not open',file_in
+      return
+    for line in f_in:
+      line=line.strip('\n')
+      data=line.split('\t')
+      len_data=len(data)
+      if len_data == 6:
+        current_date=datetime.datetime.strptime(data[0],'%Y-%m-%d').date()
+        if current_date >= self.last_day_talk:
+          info=(int(data[4]),data[1],data[5])
+          key=(data[0],data[2],data[3])
+          if key not in self.talk_day:
+            self.talk_day[key]=info
+          else:
+            print 'talk  duplicate'
+            (count,date,id_tweet) = self.talk_day[key]
+            #print key, self.talk_day[key]
+            self.talk_day[key]= (int(data[4])+count,date,id_tweet)
+            #print key, self.talk_day[key]
+    f_in.close()
+    return
+    
+  def get_talk_top_day(self, day, talk_aux_day):
+    print day,len(talk_aux_day)
+    file_out='%s/%s_%s_sentences.csv' % (self.dir_out,self.experiment,day)
+    f_out=codecs.open(file_out,'w',encoding='utf-8')
+    talk_aux_day_order=sorted([(value,key) for (key,value) in talk_aux_day.items()],reverse=True)
+    for (value,key) in talk_aux_day_order:
+      (day,date,author,text,id_tweet)=key
+      count=value
+      f_out.write('%s\t%s\t%s\t%s\t%s\n' % (date,author,text,count,id_tweet))
+    f_out.close()
+    return file_out
+     
+  def get_talk_top_date (self,file_talk_day):
+    talk_aux_day={}
+    talk_day_order=sorted([(key,value) for (key,value) in self.talk_day.items()])
+    first_day=True
+    for (key,value) in talk_day_order:
+      (day,author,text)=key
+      (count,date,id_tweet)=value
+      key_aux= (day,date,author,text,id_tweet)
+      value_aux=count
+      if first_day:
+        last_day=day
+        first_day=False
+      if day != last_day:
+        last_file=self.get_talk_top_day( last_day, talk_aux_day)
+        last_day=day
+        talk_aux_day.clear()
+      talk_aux_day[key_aux]=value_aux
+    if len(talk_aux_day) > 0:
+      last_file=self.get_talk_top_day( day, talk_aux_day) 
+    return last_file
+
 
 def main():
     
@@ -287,11 +370,11 @@ def main():
   dir_out=args.dir_out
   experiment=args.experiment
   top=args.top
-  file_log='%s/%s_join_status.txt' % (dir_out,experiment)
-  f_log=codecs.open(file_log,'w',encoding='utf-8')
   num_pack=0
   # joining counters
   joining=JoinCounters(experiment,dir_in,dir_out,top)
+  file_log='%s/%s_join_status.txt' % (dir_out,experiment)
+  f_log=codecs.open(file_log,'w',encoding='utf-8')
   start = datetime.datetime.fromtimestamp(time.time())
   print 'processing counters file_counters_top'
   start_file_counters_top=datetime.datetime.fromtimestamp(time.time())
@@ -344,6 +427,25 @@ def main():
     num_pack=0
   stop = datetime.datetime.fromtimestamp(time.time())
   f_log.write(('file_talk_top runtime\t%s\n') % (stop - start_file_talk_top))
+  print 'processing talk_day'
+  start_file_talk_day=datetime.datetime.fromtimestamp(time.time())
+  for file_talk_day in  files_talk_date:
+    joining.reset_context()
+    while True:
+      pack='%s/streaming_%s_%s_%s' % (dir_in,experiment,num_pack,file_talk_day)
+      (status, output) =commands.getstatusoutput('ls '+pack)
+      #print status, output
+      if status !=0:
+        break
+      joining.talk_top_date(num_pack,file_talk_day)
+      print 'processed', pack
+      num_pack += 1
+    last_file=joining.get_talk_top_date(file_talk_top)
+    num_pack=0
+  recent_talk=('%s/%s_hoy_sentences.csv' % (dir_out,experiment))
+  (status, output) =commands.getstatusoutput('cp '+ last_file +' '+ recent_talk)
+  stop = datetime.datetime.fromtimestamp(time.time())
+  f_log.write(('file_talk_top_day runtime\t%s\n') % (stop - start_file_talk_day))
   print 'processing loc_cat'
   start_file_loc_cat=datetime.datetime.fromtimestamp(time.time())
   for file_loc_cat in  files_loc_cat:
@@ -359,11 +461,13 @@ def main():
       print   'cat '+pack+ ' >>' + file_out
       (status, output) =commands.getstatusoutput('cat '+pack+ ' >>' + file_out)
       num_pack +=1
-    num_pack=0
+    num_pack = 0
   stop = datetime.datetime.fromtimestamp(time.time())
   f_log.write(('file_loc_cat runtime\t%s\n') % (stop - start_file_loc_cat))
   stop = datetime.datetime.fromtimestamp(time.time())
   f_log.write(('total runtime\t%s\n') % (stop - start))
+  f_log.write(('number of packs\t%s\n') % (num_pack))
+  f_log.write(('last_day_talk\t%s\n') % (last_file))
   f_log.close()
   exit(0)
 

@@ -184,7 +184,7 @@ class Location (object):
     text_location_aux=strip_accents(text_location)
     (found_spain,found_latitude,found_longitude)=self.is_spain (text_location)
     (found_region,found_latitude,found_longitude)= self.get_region (text_location_aux)
-    (found_area,found_latitude,found_longitude)= self.get_area(text_location_aux) 
+    (found_area,found_latitude,found_longitugeode)= self.get_area(text_location_aux) 
     found_location='NA'
     self.num_users +=1
     if self.num_users %1000 ==0:
@@ -323,9 +323,7 @@ def main():
 
   f_location = codecs.open(dir_out+prefix+'_loc.txt', 'w',encoding='utf-8') 
   f_location_day = codecs.open(dir_out+prefix+'_location_day.csv', 'w',encoding='utf-8')
-  f_location_day.write ('created_at;latitude;longitude\n')
   f_geolocation_day = codecs.open(dir_out+prefix+'_geolocation_day.csv', 'w',encoding='utf-8')
-  f_geolocation_day.write ('Timestamp;latitude;longitude;text\n')
   location=Location(prefix,file_regions,file_areas,file_locations)
   num_tweets=0
   for line in f_in:
