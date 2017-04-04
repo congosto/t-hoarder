@@ -744,7 +744,7 @@ def main():
   prefix=filename.group(1)
   extension=filename.group(2)
   print extension
-  if extension == 'txt.tar.gz':
+  if extension.find('.gz') != -1:
     flag_compress=True
   # get start time and end time 
   if  flag_filter:

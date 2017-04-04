@@ -283,7 +283,7 @@ def main():
   prefix=filename.group(1)
   extension=filename.group(2)
   print extension
-  if extension == 'txt.tar.gz':
+  if extension.find('.gz') != -1:
     flag_compress=True
   try:  
     f_in = codecs.open(dir_in+file_in, 'rU',encoding='utf-8')
