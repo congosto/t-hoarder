@@ -36,33 +36,40 @@ def filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
   for word in words:
     if word in filter_words:
       return True 
-  for name in filter_names:  
-    if text.find(name) != -1:
-      return True  
-  for name in filter_names:  
-    if loc.find(name) != -1:
-      return True  
-  for name in filter_names:  
-    if author.find(name) != -1:
-      return True  
+  if len(filter_names) > 0: 
+    for name in filter_names:  
+      match = re.search(r''+ name,text,re.U)
+      if match != None:
+       return True
+    for name in filter_names:  
+      match = re.search(r''+ name,loc,re.U)
+      if match != None:
+       return True
   return False
   
 def select_tweet (author,text,loc,select_users,select_words,select_names):
   author=author.lower()
-  if  author in select_users:
-    return True
-  if  author[1:] in select_users:
-    return True
-  words=re.findall (r'[@#]*[-\w]+', text,re.U)
-  for word in words:
-    if word in select_words:
-      return True 
-  for name in select_names:  
-    if text.find(name) != -1:
+  if len (select_users) > 0: 
+    if  author   in select_users:
       return True
-  for name in select_names:  
-    if loc.find(name) != -1:
+    if  author[1:]  in select_users:
       return True
+  else:
+    return True
+  if select_words > 0:
+    words=re.findall (r'[@#]*[-\w]+', text,re.U)
+    for word  in words:
+      if word in select_words:
+        return True
+  else:
+    return True 
+  if len(select_names) > 0: 
+    for name in select_names:  
+     match = re.search(r''+ name,text,re.U)
+     if match != None:
+      return True
+  else:
+    return True
   return False
   
 def get_data (file_in):
@@ -70,8 +77,8 @@ def get_data (file_in):
   try:
     f = codecs.open(file_in, 'rU',encoding='utf-8')
   except:
-    print 'Can not open file',file_in
-    exit (1)  
+    print 'Can not open file %s, is going to be ignored' % file_in
+    pass  
   for line in f: 
       line= line.strip("\n")
       data=line.split('\t')
@@ -195,24 +202,37 @@ def main():
       num_tweets=num_tweets +1 
       if num_tweets % 100000 == 0:
         print num_tweets  
-      if day_str in filter_days:
-        pass
+      elif day_str in filter_days:
+        pass # tweet filtered because matches a disposable date  
       elif flag_from and  current_day < from_day:   
-         pass
+         pass #tweet fitered because is before to a date  
       elif flag_to and current_day > to_day: 
-         pass
-      elif flag_filter:
-        if filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
-          pass 
-        else:  
-          f_out.write(line_raw)
+         pass #tweet filtered because is after to a date
       elif flag_select:
         if select_tweet (author,text,loc,select_users,select_words,select_names):
-           f_out.write (line_raw)
+          if flag_filter:
+            if filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
+              #print text,'\ntweet filtered becasuse matches a select condition but matches a filter condition'
+              pass #tweet filtered becasuse matches a select condition but matches a filter condition 
+            else:
+              #print text,'\n#tweet selected because matches a select contition and does not matches a filter condition'
+              f_out.write (line_raw) #tweet selected because matches a select contition and does not matches a filter condition
+          else:
+            #print text,'\n#tweet selected because matches a select condition and does not exist a file filter'
+            f_out.write (line_raw) #tweet selected because matches a select condition and does not exist a file filter 
         else:  
-          pass
-      else:  
-        f_out.write(line_raw)
+          #print text,'\n#tweet filtered because does not matches a select condition'
+          pass #tweet filtered because does not matches a select condition 
+      elif flag_filter:
+        if filter_tweet (author,text,loc,filter_users,filter_words,filter_names):
+          #print text,'\n#tweet filtered because  matches a filter condition'
+          pass #tweet filtered because  matches a filter condition  
+        else:  
+          #print text,'\n#tweet selected because does not matches a filter condition'
+          f_out.write(line_raw) #tweet selected because does not matches a filter condition
+      else: 
+        #print text,'\n#tweet select because does not match any filter condition' 
+        f_out.write(line_raw) #tweet select because does not match any filter condition
 
   f_in.close() 
   f_out.close() 
