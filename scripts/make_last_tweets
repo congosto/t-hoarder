@@ -27,10 +27,10 @@ for file in $(ls ${store}/*${experiment}_*.txt); do
   
   status_file=${base}_counter_status.txt
   echo "${store}/${file_in}" 
-  if [ -e "${store}/datos_${experiment}/filter.txt" ]
+  if [ -e "${store}/datos_${experiment}/filter.txt" ] || [ -e "${store}/datos_${experiment}/select.txt" ]
     then
-      echo "quito spam"
-      $HOME/t-hoarder/tweets_select_filter.py ${file_in} --dir_in ${store}/ --filter_users ${store}/datos_${experiment}/filter.txt --filter_names ${store}/datos_${experiment}/filter.txt
+      echo "False positive filter"
+      $HOME/t-hoarder/tweets_select_filter.py ${file_in} --dir_in ${store}/ --filter_users ${store}/datos_${experiment}/filter.txt --filter_names ${store}/datos_${experiment}/filter.txt --select_users ${store}/datos_${experiment}/select.txt --select_names ${store}/datos_${experiment}/select.txt
       file_in=${base}.sel
   fi
   echo " running package counters ${store}/ ${file_in}  "
