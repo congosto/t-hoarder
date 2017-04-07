@@ -268,7 +268,7 @@ def main():
 # enviroment
   path_keys=path_root+'/t-hoarder/keys/'
   path_store=path_root+'/t-hoarder/store/'
-  path_experiment=path_root+'/t-hoarder/store/datos_'+experiment+'/'
+  path_experiment=path_root+'/t-hoarder/store/'+experiment+'/'
 # end enviroment
   app_keys_file= path_keys+args.app_keys
   user_keys_file= path_keys+args.user_keys

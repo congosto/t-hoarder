@@ -1,0 +1,14 @@
+#!/bin/bash
+# Shell script to call streaming api indefinitely
+
+if [ $# -ne 1 ]
+then
+   echo "usage: tweet_streaming_persistent   'script + parameter'"
+      exit 1
+fi
+while true
+ do
+  echo "run command $1"
+  $1
+  sleep 10
+done

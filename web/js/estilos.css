@@ -1,0 +1,104 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	position: relative; 
+}
+body {
+	font: 80% Verdana, Arial, Sans-Serif;
+}
+code {
+	font-size: 1.2em;
+	font-style: italic;
+}
+ul {
+	padding: 0 20px;
+	margin: 0;
+}
+li {
+	margin-right: 5em;
+	margin-left: 5em;
+}
+p {
+	padding-right 20px;
+	padding-left: 20px;
+	margin: 0 0 1em;
+}
+p.clasificado {
+	margin: -15px;
+	font-size: .9em;
+	background: transparent url(http://www.niquelao.net/wp-content/themes/rumoroso/img/orange/ftl1.gif) top left no-repeat;
+	padding: .5em 2em;
+	text-align: right;
+}
+pre {
+	font-size: 1.2em;
+	background-color: #ddd;
+	color: #000;
+	border-width: 1px 1px 1px 10px;
+	border-color: #F00;
+	border-style: solid;
+	padding: 5px;
+}
+.ejemplo {
+	width: 80%;
+	margin: auto;	
+}
+.ejemplo div {
+	border: 1px solid;
+	padding: 10px;
+	margin: 10px;
+	background-color: #FFC;
+}
+.ejemplo div div {
+	border: none;
+	padding: 0;
+	margin: 0;
+	background-color: auto;
+}
+.ejemplo div p {
+	text-align: center;
+}
+input {
+	font-size: 1em;
+	margin: 1em 0 0;
+	padding: 0;
+	right: 0;
+}
+span.grupo input {
+	position: relative;
+	width: 3em;
+	height: auto;
+	margin: 0 .2em;
+}
+label span,
+span.grupo {
+	margin: .5em auto;
+	position: relative;
+	padding: 0;
+	text-indent: 0;
+	height: 1.5em;
+}
+span.grupo {
+	display: block;
+	text-align: center;
+}
+label span {
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	padding: 0;
+	text-indent: 0;
+	height: 1.5em;
+}
+label span#nombre_dia_fechaj,
+label span#nombre_dia_fechaj span {
+	display: inline;
+}
+span.nota {
+	position: absolute;
+	top: -5000px;
+	left: -5000px;
+}
