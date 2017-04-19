@@ -102,12 +102,12 @@ echo "s/@cgi/http:\/\/t-hoarder.com\/scripts\/tweets_talk_cgi.py/" >>${temp2}
 sed -f ${temp2} ${dir_in}/grafica_panel_cgi.html > ${dir_out}/${experiment}/${experiment}_top_apps_day.html
 echo "created ${dir_out}/${experiment}/${experiment}_top_apps_day.html"
 
-echo "s/@data_file/${experiment}_locations.txt/" >${temp2}
+echo "s/@data_file/${experiment}_location_day.csv/" >${temp2}
 echo "s/@experiment/${experiment}/" >>${temp2}
 sed -f ${temp2} ${dir_in}/grafica_location.html > ${dir_out}/${experiment}/${experiment}_locations.html
 echo "created ${dir_out}/${experiment}/${experiment}_locations.html"
 
-echo "s/@data_file/${experiment}_geolocation.txt/" >${temp2}
+echo "s/@data_file/${experiment}_geolocation_day.csv/" >${temp2}
 echo "s/@experiment/${experiment}/" >>${temp2}
 sed -f ${temp2} ${dir_in}/grafica_geolocation.html > ${dir_out}/${experiment}/${experiment}_geolocations.html
 echo "created ${dir_out}/${experiment}/${experiment}_geolocations.html"

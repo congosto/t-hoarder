@@ -17,12 +17,12 @@
 			   aux=loc_tweets.replace(/\r/g,""); 		
 			   list_aux = aux.split('\n');
                for (i=0;i<list_aux.length;i++){
-			     coordinates=list_aux[i].split(",");
-				 if (coordinates.length ==2)
-				 {
-				   latitude=parseFloat(coordinates[0]);
-				   longitude=parseFloat(coordinates[1]);
-			       list_coordinates[i] =  new google.maps.LatLng(latitude,longitude);
+                           coordinates=list_aux[i].split(";");
+                                 if (coordinates.length ==3)
+                                 {
+                                   latitude=parseFloat(coordinates[1]);
+                                   longitude=parseFloat(coordinates[2]);
+                                   list_coordinates[i] =  new google.maps.LatLng(latitude,longitude);
 				 }
 			   }
             //}
