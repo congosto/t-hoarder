@@ -1,0 +1,3 @@
+locations;/home/mcongosto/experimentos/recursos/spain_localidades_nor_utm.csv
+areas;/home/mcongosto/experimentos/recursos/spain_provincias_utm.csv
+regions;/home/mcongosto/experimentos/recursos/spain_regions_utm.csv
