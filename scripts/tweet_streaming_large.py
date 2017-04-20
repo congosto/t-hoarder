@@ -283,7 +283,7 @@ def main():
      locations_list=get_list (path_experiment+file_location)
      for location in locations_list:
         locations_list_int.append (float(location))
-  file_out=path_store+experiment+'.txt'
+  file_out=path_store+'streaming_'+experiment+'.txt'
   filename=re.search (r"([\w-]+)\.([\w]+)*", file_out)
   if not filename:
     print "%s bad filename, it must have an extension xxxx.xxx",file_out
