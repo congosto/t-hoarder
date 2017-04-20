@@ -272,6 +272,7 @@ def main():
 
   file_in=args.file_in
   file_resources=args.resources
+  dir_resources= os.path.dirname(file_resources)
   dir_in=args.dir_in
   dir_out=args.dir_out
   time_setting= args.TZ
@@ -308,7 +309,7 @@ def main():
   for line in f_resources:
     data = line.split(";")
     resource=data[0]
-    file_resource=data[1].strip("\n")
+    file_resource=dir_resources+'/'+data[1].strip("\n")
     print resource,file_resource
     if resource == 'locations':
       file_locations = file_resource
