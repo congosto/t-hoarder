@@ -101,39 +101,49 @@ do
                    read list_users
                    echo "${type_filter}: ${list_users}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_users}" > ./store/${experiment}/users.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} users.txt' &" > ./store/${experiment}/command  
+                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} users.txt' &" > ./store/${experiment}/command_start 
+                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
+                   chmod +x ./store/${experiment}/command_process
+                   echo "Experiment ${experiment} created"
                  ;;
                  words)
                    echo "A comma-separated list of phrases. Take a look to API documentation -Track- (https://dev.twitter.com/streaming/overview/request-parameters#track):"
                    read list_words
                    echo "${type_filter}: ${list_words}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_words}" > ./store/${experiment}/words.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} words.txt' &" >  ./store/${experiment}/command
+                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} words.txt' &" >  ./store/${experiment}/command_start
+                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
+                   chmod +x ./store/${experiment}/command_process
+                   echo "Experiment ${experiment} created"
                  ;;
                  locations)
                    echo "A comma-separated list of longitude,latitude pairs specifying a set of bounding boxes. Take a look to API documentation -Locations- (https://dev.twitter.com/streaming/overview/request-parameters#locations):"
                    read list_locations
                    echo "${type_filter}: ${list_locations}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_locations}" > ./store/${experiment}/locations.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} locations.txt' &" > ./store/${experiment}/command
+                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} locations.txt' &" > ./store/${experiment}/command_start
+                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
+                   chmod +x ./store/${experiment}/command_process
+                   echo "Experiment ${experiment} created"
                  ;;
                  *)
                     echo " ${type_filter} option unknow"
+                    echo "Experiment ${experiment} NOT created"
                  ;;
                esac
-               echo "Experiment ${experiment} created"
             fi
         ;;
 
         3)    
             echo "Enter the name of the experiment: "
             read experiment
-            if [ -e ${root}/t-hoarder/store/${experiment}/command ]
+            if [ -e ${root}/t-hoarder/store/${experiment}/command_start ]
             then
                num_pids=`ps -e -o pid,args |grep -c ${experiment}`
                if [ ${num_pids} = 1 ]
                then
-                 command=cat ./store/${experiment}/command
+                 command=cat ./store/${experiment}/command_start
+                 chmod +x  ./store/${experiment}/command_start
                  ${command} 1>/dev/null
                  echo "${experiment} started"
                else
