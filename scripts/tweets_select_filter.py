@@ -54,22 +54,16 @@ def select_tweet (author,text,loc,select_users,select_words,select_names):
       return True
     if  author[1:]  in select_users:
       return True
-  else:
-    return True
   if select_words > 0:
     words=re.findall (r'[@#]*[-\w]+', text,re.U)
     for word  in words:
       if word in select_words:
         return True
-  else:
-    return True 
   if len(select_names) > 0: 
     for name in select_names:  
      match = re.search(r''+ name,text,re.U)
      if match != None:
       return True
-  else:
-    return True
   return False
   
 def get_data (file_in):
@@ -202,7 +196,7 @@ def main():
       num_tweets=num_tweets +1 
       if num_tweets % 100000 == 0:
         print num_tweets  
-      elif day_str in filter_days:
+      if day_str in filter_days:
         pass # tweet filtered because matches a disposable date  
       elif flag_from and  current_day < from_day:   
          pass #tweet fitered because is before to a date  

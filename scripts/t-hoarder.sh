@@ -157,7 +157,7 @@ do
         4)
             echo "Enter the name of the experiment: "
             read experiment
-            if [ -e ${root}/t-hoarder/store/${experiment}/command ]
+            if [ -e ${root}/t-hoarder/store/${experiment}/command_start ]
             then
                num_pids=`ps -e -o pid,args |grep -c ${experiment}`
                if [ ${num_pids} = 1 ]
