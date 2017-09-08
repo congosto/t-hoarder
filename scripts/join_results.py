@@ -197,6 +197,7 @@ class JoinCounters(object):
       if i > self.top:
         break
       i += 1
+    f_out.write('\n')
     #print top_ten
     dates_order=sorted([(key,value) for (key,value) in self.dates.items()])
     last_date=''
@@ -246,7 +247,7 @@ class JoinCounters(object):
       f_out.write('%s' % (key))
       for i in range (0,len(values)):
         f_out.write(',%s' % (values[i]))
-      f_out.write('%\n')
+      f_out.write('\n')
     f_out.close()
     return
     
