@@ -15,7 +15,7 @@
         <td  rowspan=3 width=50% aling="top">
             <div id="tweets" style="width:400px;  padding-top:10px;">
                 <script type="text/javascript">
-                var tweets_frame='<iframe width="450," height="550" frameborder="0" marginwidth="5" name="talks" src="@cgi?experiment=@experimento&source=hoy&select=@select">';
+                var tweets_frame='<iframe width="450," height="550" frameborder="0" marginwidth="5" name="talks" src="@cgi?experiment=@experiment&source=hoy&select=@select">';
                 document.getElementById("tweets").innerHTML =tweets_frame;
                 </script>
              </div>
@@ -60,7 +60,7 @@
                     var d_ok=d.addDays(1);
                     var d_str=d_ok.toISOString();
                     str=d_str.substring(0,10);
-                    var tweets_frame='<iframe width="450," height=550" frameborder="0" marginwidth="0" name="talks" src="@cgi?experiment=@experimento&source='+str+'&select=@select">';
+                    var tweets_frame='<iframe width="450," height=550" frameborder="0" marginwidth="0" name="talks" src="@cgi?experiment=@experiment&source='+str+'&select=@select">';
                     document.getElementById("tweets").innerHTML =tweets_frame;
                 }
     }
