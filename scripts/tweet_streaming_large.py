@@ -26,6 +26,9 @@ from getpass import getpass
 from textwrap import TextWrapper
 import codecs
 import argparse
+from tweepy.utils import import_simplejson
+json = import_simplejson()
+from tweepy.utils import parse_datetime, parse_html_value, parse_a_href
 
 class oauth_keys(object):
   def __init__(self,  app_keys_file,user_keys_file):
@@ -149,69 +152,135 @@ class StreamWatcherListener(tweepy.StreamListener):
     self.MAX_SIZE=100000000  
     self.api = tweepy.API(auth)
     
-  def on_status(self, status):
-    url_expanded =None
-    geoloc=None
-    location=None
-    url_media=None
-    type_media=None
-    url_expanded=None
-    description=None
-    name=None
+  def on_data(self, data):
+    statuse = json.loads(data)
+    if 'delete' in statuse:
+      return True # keep stream alive
+    if 'id' in statuse:
+      id_tweet= statuse['id']
+      statuse_quoted_text=None
+      geoloc=None
+      url_expanded =None
+      url_media=None
+      type_media=None
+      text=None
+      location=None
+      description=None
+      name=None
+      date = parse_datetime(statuse['created_at'])
+      app = parse_html_value(statuse['source'])
 
-    if status.coordinates:
-      #print status.coordinates
-      coordinates=status.coordinates
-      list_geoloc = coordinates['coordinates']
-      geoloc= '%s, %s' % (list_geoloc[0],list_geoloc[1])
-    if status.entities:
-      #print status.entities
-      entities=status.entities
-      urls=entities['urls']
-      if len (urls) >0:
-        url=urls[0]
-        url_expanded= url['expanded_url']
-        #print '\nencontrada url', url_expanded,status.text
-      if 'media' in entities:
-        list_media=entities['media']
-        if len (list_media) >0:
-          media=list_media[0]
-          url_media= media['media_url']
-          #print '\nencontrada url media', url_media,status.text
-          type_media=media['type']
-    text=re.sub('[\r\n\t]+', ' ',status.text,re.UNICODE)
-    if status.user.location:
-      location=re.sub('[\r\n\t]+', ' ',status.user.location,re.UNICODE)
-    if status.user.description:
-      description=re.sub('[\r\n\t]+', ' ',status.user.description,re.UNICODE)
-    if status.user.name:
-      name=re.sub('[\r\n\t]+', ' ',status.user.name,re.UNICODE)
-    try:
-      tweet= '%s\t%s\t@%s\t%s\tvia=%s\tid=%s\tfollowers=%s\tfollowing=%s\tstatuses=%s\tloc=%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %  (status.id,status.created_at,status.author.screen_name,text, status.source,status.user.id,  status.user.followers_count,status.user.friends_count,status.user.statuses_count,location,url_expanded, geoloc,name,description, url_media,type_media,status.lang)
-      #print tweet
-      self.files.write_out(tweet)
-    except:
-#      print 'paso por posible unicode error\n'
-      text_error = '---------------> posible unicode error  at %s, id-tweet %s\n' % ( datetime.datetime.now(),status.id)
-      self.files.write_log (text_error)
-# Catch any unicode errors while printing to console
-# and just ignore them to avoid breaking application.
-      print text_error
-      pass
-      
-           
-    self.n_tweets= self.n_tweets + 1 
-    if self.n_tweets % 10000 == 0:
-      current_time=time.time()
-      average_rate= self.n_tweets /(current_time - self.start_time)
-      last_rate= 10000 /(current_time - self.last_time)
-      msj_log='store %s at %s, last rate %s average rate %s \n' % (self.n_tweets, datetime.datetime.now(), last_rate, average_rate)
-      self.files.write_log (msj_log)
-      self.last_time=current_time
-      
+#get geolocation
+      if 'coordinates' in statuse:
+        try:
+          coordinates=statuse['coordinates']
+          if coordinates != None:
+            list_geoloc = coordinates['coordinates']
+            geoloc= '%s, %s' % (list_geoloc[0],list_geoloc[1])
+        except:
+          text_error = '---------------->bad coordinates, id tweet %s at %s\n' % (id_tweet,datetime.datetime.now())
+          self.files.write_log (text_error)
+#get entities
+      if 'entities' in statuse:
+        try:
+          entities=statuse['entities']
+          urls=entities['urls']
+          if len (urls) >0:
+            url=urls[0]
+            url_expanded= url['expanded_url']
+        except:
+          text_error = '---------------->bad entity urls, id tweet %s at %s\n' % (id_tweet,datetime.datetime.now())
+          self.f_log.write (text_error)
+        try:
+          if 'media' in entities:
+            list_media=entities['media']
+            if len (list_media) >0:
+              media=list_media[0]
+              url_media= media['media_url']
+              type_media=media['type']
+        except:
+          text_error = '---------------->bad entity media, at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+          self.files.write_log (text_error)
+#get text
+      try:
+        if 'text' in statuse:
+          text=re.sub('[\r\n\t]+', ' ',statuse['text'])
+        if 'extended_tweet' in statuse:
+          extended_tweet= statuse['extended_tweet']
+          text=re.sub('[\r\n\t]+', ' ',extended_tweet['full_text'])
+        if 'retweeted_status' in statuse:
+          statuse_RT= statuse['retweeted_status']
+          if 'extended_tweet' in statuse_RT:
+            extended_RT= statuse_RT['extended_tweet']
+            RT_expand=re.sub('[\r\n\t]+', ' ',extended_RT['full_text'])
+            RT=re.match(r'(^RT @\w+: )',text)
+            if RT:
+              text= RT.group(1) + RT_expand
+      except:
+          text_error = '---------------->bad tweet text,  at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+          self.files.write_log (text_error)
+#get quoted if exist
+      if 'quoted_status_id' in statuse:
+        try:
+          print statuse['quoted_status_id']
+          if 'quoted_status' in statuse:
+            statuse_quoted=statuse['quoted_status']
+            if 'text' in statuse_quoted:
+              statuse_quoted_text=statuse_quoted['text']
+              statuse_quoted_text=re.sub('[\r\n\t]+', ' ',statuse_quoted_text)
+              print 'tweet nested',statuse_quoted_text
+        except:
+          text_error = '---------------->bad quoted,  at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+          self.files.write_log (text_error)
+#get user profile
+      if 'user' in statuse:
+        profile_user= statuse['user']
+        try:
+          if 'location' in profile_user:
+            if profile_user['location'] != None:
+              location=re.sub('[\r\n\t]+', ' ',profile_user['location'],re.UNICODE)
+        except:
+          text_error = '---------------->bad user location:%s ,  at %s id tweet %s \n' % (datetime.datetime.now(),profile_user['location'],id_tweet)
+          self.files.write_log.write (text_error)
+        try:
+          if 'description' in profile_user:
+            if profile_user['description'] != None:
+              description=re.sub('[\r\n\t]+', ' ',profile_user['description'],re.UNICODE)
+        except:
+          text_error = '---------------->bad user description,  at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+          self.files.write_log.write (text_error)
+        try:
+          if 'name' in profile_user:
+            if profile_user['name'] != None:
+              name=re.sub('[\r\n\t]+', ' ',profile_user['name'],re.UNICODE)
+        except:
+          text_error = '---------------->bad user name,  at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+          self.files.write_log (text_error) 
+      try:
+        tweet= '%s\t%s\t@%s\t%s\tvia=%s\tid=%s\tfollowers=%s\tfollowing=%s\tstatuses=%s\tloc=%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %  (id_tweet,date,profile_user['screen_name'],text, app,profile_user['id'], profile_user['followers_count'],profile_user['friends_count'],profile_user['statuses_count'],location,url_expanded, geoloc,name,description, url_media,type_media,statuse_quoted_text,statuse['lang'])
+        #print tweet
+        self.files.write_out(tweet)
+      except:
+        text_error = '---------------> Format error  at %s, id-tweet %s\n' % ( datetime.datetime.now(),id_tweet)
+        self.files.write_log (text_error)
+
+#speed control
+      self.n_tweets= self.n_tweets + 1 
+      if self.n_tweets % 10000 == 0:
+        current_time=time.time()
+        average_rate= self.n_tweets /(current_time - self.start_time)
+        last_rate= 10000 /(current_time - self.last_time)
+        msj_log='store %s at %s, last rate %s average rate %s \n' % (self.n_tweets, datetime.datetime.now(), last_rate, average_rate)
+        self.files.write_log (msj_log)
+        self.last_time=current_time
+#pack control
       if  self.files.size_f_out() >= self.MAX_SIZE:
         print 'new pack'
         self.files.new_pack ()  #  increase file number 
+    else:
+      text_error = '---------------> message no expected  %s,  %s\n' % ( datetime.datetime.now(),data)
+      self.f_log.write (text_error)
+    return True # keep stream alive
 
   def on_error(self, status_code):
  #   print 'paso por on_error\n'
