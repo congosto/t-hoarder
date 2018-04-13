@@ -333,7 +333,7 @@ class StreamWatcherListener(tweepy.StreamListener):
                 statuse['lang'],
                 link_tweet)
          self.files.write_out(tweet) 
-         print '---->collected tweet', id_tweet
+         #print '---->collected tweet', id_tweet
       except:
         text_error = '---------------> format error  at %s, id-tweet %s\n' % ( datetime.datetime.now(),id_tweet)
         self.files.write_log (text_error)
@@ -341,6 +341,19 @@ class StreamWatcherListener(tweepy.StreamListener):
     else:
       text_error = '---------------> message no expected  %s,  %s\n' % ( datetime.datetime.now(),data)
       self.files.write_log (text_error)
+    self.n_tweets +=1 
+    if self.n_tweets % 10000 == 0:
+      current_time=time.time()
+      average_rate= self.n_tweets /(current_time - start_time)
+      last_rate= 10000 /(current_time - last_time)
+      msj_log='store %s at %s, last rate %s average rate %s \n' % (self.n_tweets, datetime.datetime.now(), last_rate, average_rate)
+      self.files.write_log (msj_log)
+      last_time=current_time
+      
+    if  self.files.size_f_out() >= self.MAX_SIZE:
+      print 'new pack'
+      self.files.new_pack ()  #  increase file number 
+      
     return True # keep stream alive
 
   def on_error(self, status_code):
@@ -427,14 +440,19 @@ def main():
   exit=False
   while not exit: # Making permanent streaming with exception handling 
     try:
+       print 'track for %s' % track_list
        stream = tweepy.Stream(auth, StreamWatcherListener(path_store,prefix,ext,auth))
-       stream.filter(follow_list, track_list,False,locations_list_int)
+       exit=stream.filter(follow_list, track_list,False,locations_list_int)
     except KeyboardInterrupt:
        print '\nGoodbye! '
        exit = True
-    except:
-       print "Error. Restarting Stream....  "
-       time.sleep(5)
+    except UnicodeDecodeError:
+       print 'Please, check if the file with the search is encoded in UTF-8`' 
+       exit = True
+    except Exception as e:
+       print e
+       exit=True
+    time.sleep(5)
 
 if __name__ == '__main__':
   try:
