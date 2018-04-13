@@ -36,7 +36,7 @@ do
   fi
 done
 
-
+dir_scripts=${root}/t-hoarder/scripts/
 while test ${exit} != 's'
 do
 
@@ -101,7 +101,7 @@ do
                    read list_users
                    echo "${type_filter}: ${list_users}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_users}" > ./store/${experiment}/users.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} users.txt' &" > ./store/${experiment}/command_start 
+                   echo "nohup bash ${dir:scripts}tweet_streaming_persistent 'python ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} users.txt' &" > ./store/${experiment}/command_start 
                    echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
                    chmod +x ./store/${experiment}/command_process
                    echo "Experiment ${experiment} created"
@@ -111,7 +111,7 @@ do
                    read list_words
                    echo "${type_filter}: ${list_words}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_words}" > ./store/${experiment}/words.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} words.txt' &" >  ./store/${experiment}/command_start
+                   echo "nohup bash ${dir:scripts}tweet_streaming_persistent 'python ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} words.txt' &" >  ./store/${experiment}/command_start
                    echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
                    chmod +x ./store/${experiment}/command_process
                    echo "Experiment ${experiment} created"
