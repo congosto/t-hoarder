@@ -240,7 +240,33 @@ class Location (object):
     return (per_location,statistics)
   def get_geocode (text):
     return
-  
+
+def get_number (item):
+  number=0
+  match=(re.search (r"\d+",item))
+  if match:
+    number = int(match.group(0))
+  return number
+
+def get_tweet (tweet):
+   data = tweet.split('\t')
+   try:
+     id_tweet = data[0]
+     timestamp = data[1]
+     date_hour =re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)',timestamp,re.U)
+     (year,month,day,hour,minutes,seconds) = date_hour[0]
+     author= data[2]
+     text = data[3]
+     app = data[4]
+     user_id = data[6]
+     followers=get_number(data[6])
+     following=get_number(data[7])
+     statuses=get_number(data[8])
+     loc = data[9]
+     return (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)
+   except:
+     print ' tweet not match'
+     return None
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # main
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -330,11 +356,11 @@ def main():
   for line in f_in:
     if  type(line) is str:
       line=unicode(line, "utf-8")
-    tweets= re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\t(@\w+)\t([^\t\n]+)\tvia=([^\t\n]+)\tid=(\S+)\tfollowers=(\S+)\tfollowing=(\S+)\tstatuses=(\S+)\tloc=([^\t\n]*)',line,re.U)
-    if len(tweets) == 0:
-       print 'not match '
+    tweet_flat= get_tweet(line)
+    if tweet_flat == None:
+      print 'not match '
     else:
-       (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)=tweets[0]
+       (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)= tweet_flat
        match=re.match(r'^(\d+)\t',line,re.U)
        if match:
          id_tweet=match.group(1)

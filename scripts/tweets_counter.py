@@ -686,6 +686,33 @@ class Counters(object):
     for word in words:
       self.dict_keywords.store(word,1)
     return
+  
+def get_number (item):
+  number=0
+  match=(re.search (r"\d+",item))
+  if match:
+    number = int(match.group(0))
+  return number
+
+def get_tweet (tweet):
+   data = tweet.split('\t')
+   try:
+     id_tweet = data[0]
+     timestamp = data[1]
+     date_hour =re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)',timestamp,re.U)
+     (year,month,day,hour,minutes,seconds) = date_hour[0]
+     author= data[2]
+     text = data[3]
+     app = data[4]
+     user_id = data[6]
+     followers=get_number(data[6])
+     following=get_number(data[7])
+     statuses=get_number(data[8])
+     loc = data[9]
+     return (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)
+   except:
+     print ' tweet not match'
+     return None
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # main
@@ -780,11 +807,11 @@ def main():
   for line in f_in:
     if  type(line) is str:
       line=unicode(line, "utf-8")
-    tweets= re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\t(@\w+)\t([^\t\n]+)\tvia=([^\t\n]+)\tid=(\S+)\tfollowers=(\S+)\tfollowing=(\S+)\tstatuses=(\S+)\tloc=([^\t\n]*)',line,re.U)
-    if len(tweets) == 0:
-       print 'not match '
+    tweet_flat= get_tweet(line)
+    if tweet_flat == None:
+      print 'not match '
     else:
-       (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)=tweets[0]
+       (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)= tweet_flat
        match=re.match(r'^(\d+)\t',line,re.U)
        if match:
          id_tweet=match.group(1)
@@ -837,16 +864,16 @@ def main():
   for line in f_in:
     if  type(line) is str:
       line=unicode(line, "utf-8")
-    tweets= re.findall(r'(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\t(@\w+)\t([^\t\n]+)\tvia=([^\t\n]+)\tid=(\S+)\tfollowers=(\S+)\tfollowing=(\S+)\tstatuses=(\S+)\tloc=([^\t\n]*)',line,re.U)
-    if len(tweets) == 0:
+    tweet_flat= get_tweet(line)
+    if tweet_flat == None:
       print 'not match '
     else:
-      (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)=tweets[0]
+      (year,month,day,hour,minutes,seconds, author,text,app,user_id,followers,following,statuses,loc)= tweet_flat
       match=re.match(r'^(\d+)\t',line,re.U)
       if match:
-         id_tweet=match.group(1)
+        id_tweet=match.group(1)
       else:
-         id_tweet=0
+        id_tweet=0
       local_tz=timedelta(hours=time_setting)
       time_GMT= datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hour), minute=int(minutes), second=int(seconds))
       local_time= time_GMT + local_tz
