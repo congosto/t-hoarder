@@ -305,7 +305,7 @@ class StreamWatcherListener(tweepy.StreamListener):
           self.files.write_log (text_error) 
       try:
          link_tweet= 'https://twitter.com/%s/status/%s' % (statuse['user']['screen_name'],id_tweet)
-         tweet='%s\t%s\t@%s\t%s\tvia=%s\tid=%s\tfollowers=%s\tfollowing=%s\tstatuses=%s\tloc=%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %  (id_tweet,
+         tweet='%s\t%s\t@%s\t%s\tvia=%s\tid=%s\tfollowers=%s\tfollowing=%s\tstatuses=%s\tloc=%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %  (id_tweet,
                 date,
                 statuse['user']['screen_name'],
                 text,
@@ -331,6 +331,9 @@ class StreamWatcherListener(tweepy.StreamListener):
                 user_quoted,
                 first_HT,
                 statuse['lang'],
+                parse_datetime(statuse['user']['created_at']),
+                statuse['user']['verified'],
+                statuse['user']['profile_image_url_https'],
                 link_tweet)
          self.files.write_out(tweet) 
          #print '---->collected tweet', id_tweet
