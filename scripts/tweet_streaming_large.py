@@ -26,8 +26,8 @@ from getpass import getpass
 from textwrap import TextWrapper
 import codecs
 import argparse
-from tweepy.utils import import_simplejson
-json = import_simplejson()
+import simplejson
+
 from tweepy.utils import parse_datetime, parse_html_value, parse_a_href
 
 class oauth_keys(object):
@@ -152,7 +152,7 @@ class StreamWatcherListener(tweepy.StreamListener):
     self.api = tweepy.API(auth)
     
   def on_data(self, data):
-    statuse = json.loads(data)
+    statuse = simplejson.loads(data)
     if 'delete' in statuse:
       return True # keep stream alive
     if 'id' in statuse:
