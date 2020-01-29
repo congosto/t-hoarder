@@ -35,7 +35,6 @@ do
     enviroment='False'
   fi
 done
-
 dir_scripts=${root}/t-hoarder/scripts/
 while test ${exit} != 's'
 do
@@ -47,10 +46,10 @@ do
     echo "2.Create a new experiment"
     echo "3.Start an experiment"
     echo "4.Stop an experiment"
-    echo "5.Experiment status"
-    echo "6.Modify an experiment"
-    echo "7.Delete an experiment"
-    echo "8.T-hoarder status"
+    echo "5.Experiment status(not implemented yet)"
+    echo "6.Modify an experiment (not implemented yet)"
+    echo "7.Delete an experiment (not implemented yet)"
+    echo "8.T-hoarder status (not implemented yet)"
     echo "9.Exit"
     echo " "
     echo "--> Type the option number: "
@@ -61,10 +60,13 @@ do
     case $opcion in
         1)
             echo "Before creating the credentials you must:"
-            echo "1. Create a Twitter app (https://apps.twitter.com) see instructions on the wiki (https://github.com/congosto/t-hoarder/wiki/Create-credits-to-access-a- The-API\)"
-            echo "2. Save Consumer Key & Consumer Secret (one key per line without leaving spaces or tabs) in a file with the name of the app and the extension 'key' in the directory keys:"
+            echo "1. Create a Twitter app (https://apps.twitter.com) see instructions on the wiki
+  (https://github.com/congosto/t-hoarder/wiki/Create-credits-to-access-a- The-API\)"
+            echo "2. Save Consumer Key & Consumer Secret (one key per line without leaving spaces or tabs)
+  in a file with the name of the app and the extension 'key' in the directory keys:"
             echo "3. Create a Twitter profile for each experiment"
-            echo "If you have completed steps 1, 2 and 3 you can now create credentials for a Twitter profile with the app"
+            echo "If you have completed steps 1, 2 and 3 you can now create credentials for a Twitter 
+  profile with the app"
             echo "-----Attention! Make sure all sessions are closed on Twitter----"
             echo "Enter the file name with the application keys: "
             read app_key
@@ -89,41 +91,41 @@ do
                echo "Enter the file name with the application keys: "
                read app_key
                echo "App keys: ${app_key}" >> ./store/${experiment}/${experiment}.cfg
-               echo "Enter the file name with the user keys: "
+               echo "Enter the twitter profile (with token): "
                read user_key
-               echo "users keys: ${user_key}" >> ./store/${experiment}/${experiment}.cfg
+               echo "users keys: ${user_key}.key" >> ./store/${experiment}/${experiment}.cfg
                echo "Enter type filter (users | words | locations): "
                read type_filter
-               make_panel  ${experiment}  ${author} ./templates  ./web/ > /dev/null
+               bash make_panel  ${experiment}  ${author} ./templates  ./web/ > /dev/null
                case ${type_filter} in
                  users)
-                   echo "A comma-separated list of user IDs. Take a look to API documentation -Follow- (https://dev.twitter.com/streaming/overview/request-parameters#follow):"
+                   echo "A comma-separated list of user IDs. Take a look to API documentation -Follow-
+  (https://dev.twitter.com/streaming/overview/request-parameters#follow):"
                    read list_users
                    echo "${type_filter}: ${list_users}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_users}" > ./store/${experiment}/users.txt
-                   echo "nohup bash ${dir:scripts}tweet_streaming_persistent 'python ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} users.txt' &" > ./store/${experiment}/command_start 
-                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
-                   chmod +x ./store/${experiment}/command_process
+                   echo "nohup bash tweet_streaming_persistent 'python2.7 ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key.key --${type_filter} users.txt' &" > ./store/${experiment}/command_start 
+                   echo "bash make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
                    echo "Experiment ${experiment} created"
                  ;;
                  words)
-                   echo "A comma-separated list of phrases. Take a look to API documentation -Track- (https://dev.twitter.com/streaming/overview/request-parameters#track):"
+                   echo "A comma-separated list of phrases. Take a look to API documentation -Track-
+  (https://dev.twitter.com/streaming/overview/request-parameters#track):"
                    read list_words
                    echo "${type_filter}: ${list_words}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_words}" > ./store/${experiment}/words.txt
-                   echo "nohup bash ${dir:scripts}tweet_streaming_persistent 'python ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} words.txt' &" >  ./store/${experiment}/command_start
-                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
-                   chmod +x ./store/${experiment}/command_process
+                   echo "nohup bash tweet_streaming_persistent 'python2.7 ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key.key --${type_filter} words.txt' &" >  ./store/${experiment}/command_start
+                   echo "bash make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
                    echo "Experiment ${experiment} created"
                  ;;
                  locations)
-                   echo "A comma-separated list of longitude,latitude pairs specifying a set of bounding boxes. Take a look to API documentation -Locations- (https://dev.twitter.com/streaming/overview/request-parameters#locations):"
+                   echo "A comma-separated list of longitude,latitude pairs specifying a set of bounding boxes. Take a look to API documentation -Locations-
+  (https://dev.twitter.com/streaming/overview/request-parameters#locations):"
                    read list_locations
                    echo "${type_filter}: ${list_locations}" >> ./store/${experiment}/${experiment}.cfg
                    echo "${list_locations}" > ./store/${experiment}/locations.txt
-                   echo "nohup tweet_streaming_persistent 'tweet_streaming_large.py ${root} ${experiment} $app_key $user_key --${type_filter} locations.txt' &" > ./store/${experiment}/command_start
-                   echo "make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
-                   chmod +x ./store/${experiment}/command_process
+                   echo "nohup tweet_streaming_persistent 'python2.7 ${dir_scripts}tweet_streaming_large.py ${root} ${experiment} $app_key $user_key.key --${type_filter} locations.txt' &" > ./store/${experiment}/command_start
+                   echo "bash make_experiment ${root} ${experiment} 1" > ./store/${experiment}/command_process
                    echo "Experiment ${experiment} created"
                  ;;
                  *)
@@ -140,12 +142,13 @@ do
             if [ -e ${root}/t-hoarder/store/${experiment}/command_start ]
             then
                num_pids=`ps -e -o pid,args |grep -c ${experiment}`
-               if [ ${num_pids} = 1 ]
+               if [ ${num_pids} -eq 1 ]
                then
-                 command=cat ./store/${experiment}/command_start
-                 chmod +x  ./store/${experiment}/command_start
-                 ${command} 1>/dev/null
+                 cd store/${experiment}
+                 command=cat ./command_start
+                 ${command} 
                  echo "${experiment} started"
+                 cd ../../
                else
                  echo "Experiment ${experiment} is running"
                fi
@@ -160,7 +163,7 @@ do
             if [ -e ${root}/t-hoarder/store/${experiment}/command_start ]
             then
                num_pids=`ps -e -o pid,args |grep -c ${experiment}`
-               if [ ${num_pids} = 1 ]
+               if [ ${num_pids} -eq 1 ]
                then
                  echo "Experiment ${experiment} is not running"
                else
