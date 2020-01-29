@@ -9,5 +9,7 @@ mkdir store
 mkdir keys
 mkdir web
 dir_scripts=`pwd`/scripts
+echo ${dir_scripts}
 echo "export PATH=${dir_scripts}:$PATH" >> $HOME/.bashrc
+export PATH=${dir_scripts}:$PATH
 echo "enviroment created"
