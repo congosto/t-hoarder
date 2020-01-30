@@ -9,7 +9,8 @@ fi
 
 
 experiment=$1
-store=${root}/store
+root=$2
+store=${root}/store/
 scripts=${root}/scripts/
 resources=${root}/resources/
 tz=$4
@@ -48,7 +49,7 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     echo " Package talk done ${store}/${file_in}  "
   else
     echo " running package talk ${store}/ ${file_in}  "
-    python2.7 ${scriptstweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
+    python2.7 ${scripts}tweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
   fi 
   status_file=${base}_loc_status.txt
   if [ -e ${store}/${experiment}/${status_file} ]
