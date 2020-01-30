@@ -1,17 +1,17 @@
 #!/bin/bash
 # shell script for procesing last tweets
 
-if [ $# -ne 4 ]
+if [ $# -ne 3 ]
 then
-   echo "usage: make_last_tweets experiment store resources TZ"
+   echo "usage: make_last_tweets experiment root TZ"
       exit 1
 fi
 
 
 experiment=$1
-store=$2
-scripts=${store}/../scripts/
-resources=$3
+store={root}/store
+scripts=${root}/scripts/
+resources=${root}/resources/
 TZ=$4
 
 
