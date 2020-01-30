@@ -9,7 +9,7 @@ fi
 
 
 experiment=$1
-store={root}/store
+store=${root}/store
 scripts=${root}/scripts/
 resources=${root}/resources/
 TZ=$4
