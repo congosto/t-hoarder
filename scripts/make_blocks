@@ -10,6 +10,7 @@ fi
 
 experiment=$1
 store=$2
+scripts=${store}/../scripts/
 resources=$3
 tz=$4
 
@@ -34,12 +35,12 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     if [ -e "${store}/${experiment}/filter.txt" ] || [ -e "${store}/${experiment}/select.txt" ]
     then
       echo "False positive filter"
-      tweets_select_filter.py ${file_in} --dir_in ${store}/ --filter_users ${store}/${experiment}/filter.txt --filter_names ${store}/${experiment}/filter.txt --select_users ${store}/${experiment}/select.txt --select_names ${store}/${experiment}/select.txt
+      python2.7 ${scripts}tweets_select_filter.py ${file_in} --dir_in ${store}/ --filter_users ${store}/${experiment}/filter.txt --filter_names ${store}/${experiment}/filter.txt --select_users ${store}/${experiment}/select.txt --select_names ${store}/${experiment}/select.txt
       file_in=${base}.sel.gz
     fi
 
     echo " running package counters ${store}/ ${file_in}  "
-    tweets_counter.py ${file_in} --filter ${store}/languages/filter.all  --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
+    python2.7 ${scripts}tweets_counter.py ${file_in} --filter ${store}/languages/filter.all  --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
   fi 
   status_file=${base}_talk_status.txt
   if [ -e ${store}/${experiment}/${status_file} ]
@@ -47,7 +48,7 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     echo " Package talk done ${store}/${file_in}  "
   else
     echo " running package talk ${store}/ ${file_in}  "
-    tweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
+    python2.7 ${scriptstweets_talk.py ${file_in}   --dir_in ${store}/ --dir_out ${store}/${experiment}/ --TZ ${tz}
   fi 
   status_file=${base}_loc_status.txt
   if [ -e ${store}/${experiment}/${status_file} ]
@@ -55,6 +56,6 @@ for file in $(ls ${store}/*${experiment}*.tar.gz); do
     echo " Package location done ${store}/${file_in}  "
   else
     echo " running package location ${store}/ ${file_in}  "
-    tweets_location.py ${file_in} ${resources}/recursos_loc.txt --dir_in ${store}/ --dir_out ${store}/${experiment}/
+    python2.7 ${scripts}tweets_location.py ${file_in} ${resources}/recursos_loc.txt --dir_in ${store}/ --dir_out ${store}/${experiment}/
   fi 
 done 
