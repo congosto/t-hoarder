@@ -12,8 +12,8 @@ experiment=$2
 TZ=$3
 
 echo "... running packages"
-bash make_blocks ${experiment}  ${root_directory}/t-hoarder/store/  ${root_directory}/t-hoarder/resources/  ${TZ}
+bash make_blocks ${experiment}  ${root_directory}  ${TZ}
 echo "... running last_tweets"
-bash make_last_tweets ${experiment}  ${root_directory}/t-hoarder/store/  ${root_directory}/t-hoarder/resources/  ${TZ}
+bash make_last_tweets ${experiment}  ${root_directory}  ${TZ}
 echo "... running joint_results"
 python2.7 ${root_directory}/t-hoarder/scripts/join_results.py ${experiment}  --dir_in ${root_directory}/t-hoarder/store/${experiment} --dir_out ${root_directory}/t-hoarder/web/${experiment} 
