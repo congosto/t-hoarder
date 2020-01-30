@@ -1,17 +1,17 @@
 #!/bin/bash
 # shell script for procesing blocks
 
-if [ $# -ne 4 ]
+if [ $# -ne 3 ]
 then
-   echo "usage: make_blocks experiment store resources"
+   echo "usage: make_blocks experiment root"
       exit 1
 fi
 
 
 experiment=$1
-store=$2
-scripts=${store}/../scripts/
-resources=$3
+store={root}/store
+scripts=${root}/scripts/
+resources=${root}/resources/
 tz=$4
 
 path=${name_file%/*}
