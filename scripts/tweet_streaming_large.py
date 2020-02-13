@@ -182,15 +182,15 @@ class StreamWatcherListener(tweepy.StreamListener):
         if statuse['in_reply_to_status_id_str'] != None:
           relation='reply'
           replied_id= statuse['in_reply_to_status_id_str']
-          user_replied=statuse['in_reply_to_screen_name']
+          user_replied='@'+statuse['in_reply_to_screen_name']
         if 'quoted_status' in statuse:
           relation='quote'
           quoted_id=statuse['quoted_status_id_str']
-          user_quoted=statuse['quoted_status']['user']['screen_name']
+          user_quoted='@'+statuse['quoted_status']['user']['screen_name']
         elif 'retweeted_status' in statuse:
           relation='RT'
           retweeted_id=statuse['retweeted_status']['id_str']
-          user_retweeted=statuse['retweeted_status']['user']['screen_name']
+          user_retweeted='@'+statuse['retweeted_status']['user']['screen_name']
           if 'quoted_status' in statuse['retweeted_status']:
             quoted_id=statuse['retweeted_status']['quoted_status']['id_str']
             user_quoted=statuse['retweeted_status']['quoted_status']['user']['screen_name']
