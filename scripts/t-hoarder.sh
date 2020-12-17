@@ -73,7 +73,7 @@ do
             echo "Enter the twitter profile: "
             read usuario
             cd keys            
-            tweet_auth.py $app_key $usuario
+            python2.7 ${dir_scripts}tweet_auth.py $app_key $usuario
             cd ..
         ;;
 
