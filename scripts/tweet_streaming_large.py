@@ -51,7 +51,7 @@ class oauth_keys(object):
       self.auth.secure = True
       self.auth.set_access_token(user_keys[0], user_keys[1])
     except:
-      print 'Error in oauth autentication, user key ', user_keys_file_num
+      print 'Error in oauth autentication, user key ', user_keys_file
       exit(83)
     return
   def get_auth(self):
@@ -183,17 +183,18 @@ class StreamWatcherListener(tweepy.StreamListener):
           relation='reply'
           replied_id= statuse['in_reply_to_status_id_str']
           user_replied='@'+statuse['in_reply_to_screen_name']
-        if 'quoted_status' in statuse:
-          relation='quote'
-          quoted_id=statuse['quoted_status_id_str']
-          user_quoted='@'+statuse['quoted_status']['user']['screen_name']
         elif 'retweeted_status' in statuse:
           relation='RT'
           retweeted_id=statuse['retweeted_status']['id_str']
           user_retweeted='@'+statuse['retweeted_status']['user']['screen_name']
           if 'quoted_status' in statuse['retweeted_status']:
             quoted_id=statuse['retweeted_status']['quoted_status']['id_str']
-            user_quoted=statuse['retweeted_status']['quoted_status']['user']['screen_name']
+            user_quoted='@'+statuse['retweeted_status']['quoted_status']['user']['screen_name']
+        elif 'quoted_status' in statuse:
+          relation='quote'
+          quoted_id=statuse['quoted_status_id_str']
+          user_quoted='@'+statuse['quoted_status']['user']['screen_name']
+
       except:
         text_error = '---------------->bad interactions ids, id tweet %s at %s\n' % (id_tweet,time.asctime())
         self.files.write_log (text_error)
@@ -219,30 +220,30 @@ class StreamWatcherListener(tweepy.StreamListener):
           entities=statuse['retweeted_status']['entities']
         if 'extended_tweet' in statuse['retweeted_status']:
           entities=statuse['retweeted_status']['extended_tweet']['entities']
-        try:
-          urls=entities['urls']
-          if len (urls) >0:
-            url_expanded= urls[0]['expanded_url']
-        except:
-          text_error = '---------------->bad enttity urls, id tweet %s at %s\n' % (id_tweet,datetime.datetime.now())
-          self.files.write_log (text_error)
-        try:
-          if 'media' in entities:
-            list_media=entities['media']
-            if len (list_media) >0:
-              url_media= list_media[0]['media_url']
-              type_media=list_media[0]['type']
-        except:
-          text_error = '---------------->bad entity media, at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
-          self.files.write_log (text_error)
-        try:
-          if 'hashtags' in entities:
-            HTs=entities['hashtags']
-            if len (HTs) >0:
-              first_HT=HTs[0]['text']
-        except:
-          text_error = '---------------->bad entity HT, id tweet %s at %s\n' % (id_tweet,time.asctime())
-          self.files.write_log (text_error)
+      try:
+        urls=entities['urls']
+        if len (urls) >0:
+          url_expanded= urls[0]['expanded_url']
+      except:
+        text_error = '---------------->bad enttity urls, id tweet %s at %s\n' % (id_tweet,datetime.datetime.now())
+        self.files.write_log (text_error)
+      try:
+        if 'media' in entities:
+          list_media=entities['media']
+          if len (list_media) >0:
+            url_media= list_media[0]['media_url']
+            type_media=list_media[0]['type']
+      except:
+        text_error = '---------------->bad entity media, at %s id tweet %s \n' % (datetime.datetime.now(),id_tweet)
+        self.files.write_log (text_error)
+      try:
+        if 'hashtags' in entities:
+          HTs=entities['hashtags']
+          if len (HTs) >0:
+            first_HT=HTs[0]['text']
+      except:
+        text_error = '---------------->bad entity HT, id tweet %s at %s\n' % (id_tweet,time.asctime())
+        self.files.write_log (text_error)
 #get text
       try:
         if 'text' in statuse:
